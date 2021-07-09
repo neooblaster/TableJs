@@ -59,6 +59,11 @@ let table = new TableJs()
     .keys('FirstName', 'LastName')
     .data(data);
 
+table.data().append(['Nom', 'Prénom'], ['A', 'B'], '1', '2', [
+    ['MOLAS', 'FREDERIC'],
+    ['RASSIAS', 'SEBASTIEN']
+]);
+
 // clog(table)
 // table.fields().get();
 clog(table.fields().get());

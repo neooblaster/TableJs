@@ -47,7 +47,12 @@ function TableJs($fields, $array) {
              * @return {TableJs}
              */
             add: function () {
-                let data =  self[`_${this.data}`];
+                let data      = self[`_${this.data}`];
+
+                // Pre processor for arguments
+                if (this.callbacks && this.callbacks.add && this.callbacks.add.pre) {
+                    arguments = this.callbacks.add.pre.apply(this, arguments);
+                }
 
                 // Process arguments
                 for (let a = 0; a < arguments.length; a++) {
@@ -68,7 +73,7 @@ function TableJs($fields, $array) {
                     if (typeof argv === 'string') {
                         if (data.lastIndexOf(argv) < 0) {
                             if (this.callbacks && this.callbacks.add && this.callbacks.add.push) {
-                                argv = this.callbacks.add.push(argv);
+                                argv = this.callbacks.add.push([argv]);
                             }
                             data.push(argv);
                         }
@@ -150,7 +155,11 @@ function TableJs($fields, $array) {
     self.data = function () {
         let functions = {
             /**
-             *
+             * Add to the end values in the table data.
+             * - String value stands for one line
+             * - Array of string stands for one line
+             * - Array of Array stands for data matrix
+             * All here before type can be mixted at once
              *
              * @return ...
              */
@@ -158,6 +167,35 @@ function TableJs($fields, $array) {
                 return self.core.apply(extended).add.apply(extended, arguments);
             },
 
+            /**
+             * Wraps array of string into an array to become data matrix.
+             *
+             * @return {IArguments}
+             */
+            preprocArgs: function () {
+                for (let i in arguments) {
+                    if(!arguments.hasOwnProperty(i)) continue;
+                    let argv = arguments[i];
+
+                    if (argv instanceof Array) {
+                        if (argv.length > 0) {
+                            if (typeof argv[0] === 'string') {
+                                arguments[i] = [argv];
+                            }
+                        }
+                    }
+                }
+
+                return arguments;
+            },
+
+            /**
+             * Complete row according to number of set fields.
+             *
+             * @param {Array} $row  Data matrix row to process
+             *
+             * @return {Array} Consolidated row
+             */
             consolidate: function ($row) {
                 let fieldsNumber = self._fields.length;
                 let rowNumber = $row.length;
@@ -177,6 +215,7 @@ function TableJs($fields, $array) {
             data: 'data',
             callbacks: {
                 add: {
+                    pre: functions.preprocArgs,
                     push: functions.consolidate
                 }
             },
