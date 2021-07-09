@@ -10,18 +10,27 @@ function TableJs($fields, $array) {
     self._data = [];
     self._indexes = {};
 
-    // Fields, Keys & Data have the same working process
-    // Mutualisation by using Core
-    // Specialisation using callbacks
+    /**
+     * Fields, Keys & Data have the same working process.
+     * - Mutualisation by using Core
+     * - Specialisation using callbacks
+     *
+     * @return ...
+     */
     self.core = function () {
         // For better usage, each variant can be called directly
         // Call directly, return instance.
-        // Call with empty parameter will return submethods
+        // Call with empty parameter will return sub-methods
         if (arguments.length > 0) {
             return self.core.apply(this).set.apply(this, arguments);
         }
 
         let returning = Object.assign({
+            /**
+             * Flush & Set provided arguments values in bound variable name (this.data).
+             *
+             * @return {TableJs}
+             */
             set: function () {
                 let data = self[`_${this.data}`];
 
@@ -32,6 +41,11 @@ function TableJs($fields, $array) {
                 return self.core.apply(this).add.apply(this, arguments);
             },
 
+            /**
+             * Add to the end arguments values in bound variable name (this.data).
+             *
+             * @return {TableJs}
+             */
             add: function () {
                 let data =  self[`_${this.data}`];
 
@@ -66,12 +80,21 @@ function TableJs($fields, $array) {
                 return self;
             },
 
-            get: function (a) {
+            /**
+             * Return values stored in bounded variable name (this.data).
+             *
+             * @return {Array}
+             */
+            get: function () {
                 return self[`_${this.data}`];
             }
         }, this.returns);
 
+        // To standardize & for extended functions,
+        // Make function wrapper to bind "this"
         for (let fName in returning) {
+            if (!returning.hasOwnProperty(fName)) continue;
+
             let fn = returning[fName];
             returning[fName] = function () {
                 return fn.apply(this, arguments);
@@ -81,6 +104,11 @@ function TableJs($fields, $array) {
         return returning;
     };
 
+    /**
+     * Field Manager.
+     *
+     * @return ...
+     */
     self.fields = function () {
         let functions = {
 
@@ -95,6 +123,11 @@ function TableJs($fields, $array) {
         return self.core.apply(extended, arguments);
     };
 
+    /**
+     * Keys Manager.
+     *
+     * @return ...
+     */
     self.keys = function () {
         let functions = {
 
@@ -109,10 +142,20 @@ function TableJs($fields, $array) {
         return self.core.apply(extended, arguments);
     };
 
+    /**
+     * Data Manager.
+     *
+     * @return ...
+     */
     self.data = function () {
         let functions = {
+            /**
+             *
+             *
+             * @return ...
+             */
             append: function () {
-                return self.core.apply(extended, arguments);
+                return self.core.apply(extended).add.apply(extended, arguments);
             },
 
             consolidate: function ($row) {
