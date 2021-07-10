@@ -1,6 +1,22 @@
 clog = console.log;
 
 
+/**
+ * Callback System :
+ *  - Core.add() :
+ *      - pre,  receive {Arguments},    must return {Arguments}.
+ *      - push, receive {String|Array}, must return {String|Array}.
+ *
+ */
+
+/**
+ *
+ * @param $fields
+ * @param $array
+ * @return {TableJs}
+ * @constructor
+ */
+
 
 function TableJs($fields, $array) {
     let self = this;
@@ -12,7 +28,7 @@ function TableJs($fields, $array) {
 
     /**
      * Fields, Keys & Data have the same working process.
-     * - Mutualisation by using Core
+     * - Pooling by using Core
      * - Specialisation using callbacks
      *
      * @return ...
@@ -63,7 +79,7 @@ function TableJs($fields, $array) {
                         argv.forEach(function ($value) {
                             if (data.lastIndexOf($value) < 0) {
                                 if (this.callbacks && this.callbacks.add && this.callbacks.add.push) {
-                                    $value = this.callbacks.add.push($value);
+                                    $value = this.callbacks.add.push.call(this, $value);
                                 }
                                 data.push($value);
                             }
@@ -73,7 +89,7 @@ function TableJs($fields, $array) {
                     if (typeof argv === 'string') {
                         if (data.lastIndexOf(argv) < 0) {
                             if (this.callbacks && this.callbacks.add && this.callbacks.add.push) {
-                                argv = this.callbacks.add.push([argv]);
+                                argv = this.callbacks.add.push.call(this, argv);
                             }
                             data.push(argv);
                         }
@@ -92,8 +108,21 @@ function TableJs($fields, $array) {
              */
             get: function () {
                 return self[`_${this.data}`];
+            },
+
+            values: function () {
+
+                return [];
             }
         }, this.returns);
+
+        // Create methods to get from fields
+        let coreContext = this;
+        self._fields.forEach(function ($field) {
+            returning[$field] = function () {
+                return self.core.apply(this).values.call(this, $field, arguments);
+            }.bind(coreContext);
+        });
 
         // To standardize & for extended functions,
         // Make function wrapper to bind "this"
@@ -116,12 +145,22 @@ function TableJs($fields, $array) {
      */
     self.fields = function () {
         let functions = {
+            createMethod: function ($field) {
+                self[$field] = function () {
+                    return self.core.apply(this).values.call(this, $field, arguments);
+                }.bind(this);
 
+                return $field;
+            }
         };
 
         let extended = {
             data: 'fields',
-            callbacks: {},
+            callbacks: {
+                add: {
+                    push: functions.createMethod
+                }
+            },
             returns: functions
         };
 
@@ -197,6 +236,10 @@ function TableJs($fields, $array) {
              * @return {Array} Consolidated row
              */
             consolidate: function ($row) {
+                if (typeof $row === 'string') {
+                    $row = [$row];
+                }
+
                 let fieldsNumber = self._fields.length;
                 let rowNumber = $row.length;
                 let missingCell = fieldsNumber - rowNumber;

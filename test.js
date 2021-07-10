@@ -69,6 +69,8 @@ table.data().append(['Nom', 'Prénom'], ['A', 'B'], '1', '2', [
 clog(table.fields().get());
 clog(table.keys().get());
 clog(table.data().get());
+// table.FirstName();
+clog(table.FirstName());
 
 
 // clog("Test 1 - From Empty");
