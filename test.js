@@ -54,23 +54,25 @@ let data = [
 //     testFields4.data().set(data);
 
 
-let table = new TableJs()
-    .fields('FirstName', 'LastName', 'BirthDate', 'BirthCity')
-    .keys('FirstName', 'LastName')
-    .data(data);
+// let table = new TableJs()
+//     .fields('FirstName', 'LastName', 'BirthDate', 'BirthCity')
+//     .keys('FirstName', 'LastName')
+//     .data(data);
 
-table.data().append(['Nom', 'Prénom'], ['A', 'B'], '1', '2', [
-    ['MOLAS', 'FREDERIC'],
-    ['RASSIAS', 'SEBASTIEN']
-]);
+// table.data().append(['Nom', 'Prénom'], ['A', 'B'], '1', '2', [
+//     ['MOLAS', 'FREDERIC'],
+//     ['RASSIAS', 'SEBASTIEN']
+// ]);
 
 // clog(table)
 // table.fields().get();
-clog(table.fields().get());
-clog(table.keys().get());
-clog(table.data().get());
+// clog(table.fields().get());
+// clog(table.keys().get());
+// clog(table.data().get());
 // table.FirstName();
-clog(table.FirstName());
+// clog(table.FirstName('DUPRE'));
+// clog(table.data().FirstName('MURET'));
+// clog(table._indexes.byFields.FirstName);
 
 
 // clog("Test 1 - From Empty");
@@ -84,5 +86,19 @@ clog(table.FirstName());
 // clog("\nTest 3 - From String");
 // let DataTable_other = new TableJs('A');
 // clog(DataTable_other.data());
+
+
+
+let table = new TableJs(
+    // Fields
+    ['MATNR', 'WERKS', 'EKORG', 'VKORG'],
+
+    // Data
+    [
+        ['A12345', 'F500', 'A500', 'V500'],
+        ['B23456', 'F500', 'A500', 'V500'],
+        ['C34567', 'F100', 'A500', 'V500'],
+    ]
+);
 
 

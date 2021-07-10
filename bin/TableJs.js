@@ -6,6 +6,7 @@ clog = console.log;
  *  - Core.add() :
  *      - pre,  receive {Arguments},    must return {Arguments}.
  *      - push, receive {String|Array}, must return {String|Array}.
+ *      - post, receive {Array},        must return {Array}.
  *
  */
 
@@ -102,6 +103,14 @@ function TableJs($fields, $array) {
                     }
                 }
 
+                // Post Processing
+                if (this.callbacks && this.callbacks.add && this.callbacks.add.post) {
+                    data = this.callbacks.add.post.call(this, data);
+                }
+
+                // Indexing Data
+                self.core.apply(this).indexing();
+
                 return self;
             },
 
@@ -115,16 +124,61 @@ function TableJs($fields, $array) {
             },
 
             // WIP
-            indexing: function ($row) {
-                // If no data provided, reindexing all game data.
-                if ($row === undefined) {
+            indexing: function () {
+                // Flush Indexes
+                self._indexes = {
+                    byKeys: {},
+                    byFields: {}
+                };
+
+                // Reading Data
+                for (let r = 0; r < self._data.length; r++) {
+                    let row = self._data[r];
+
+                    // Reading for fields
+                    for (let f = 0; f < self._fields.length; f++) {
+                        let field = self._fields[f];
+                        let value = row[f];
+
+                        if (!self._indexes.byFields[field]) self._indexes.byFields[field] = {};
+                        if (!self._indexes.byFields[field][value]) self._indexes.byFields[field][value] = [];
+                        self._indexes.byFields[field][value].push(r);
+                    }
+
+                    //
                 }
             },
 
             // WIP
             values: function () {
+                let field = arguments[0];
+                let values = [];
+                let data = [];
 
-                return [];
+                // Process All argument (except first which is field)
+
+                for (let a = 0; a < arguments[1].length; a++) {
+                    let forValue = arguments[1][a];
+
+                    // For common processing, transform string to array
+                    if (!(forValue instanceof Array)) {
+                        forValue = [forValue];
+                    }
+
+                    // Manage duplicated values
+                    forValue.forEach(function ($value) {
+                        if(values.lastIndexOf($value) < 0) values.push($value);
+                    });
+                }
+
+                // Retrieve rows for provided values
+                values.forEach(function ($value) {
+                    self._indexes.byFields[field][$value].forEach(function ($index) {
+                        if (self._data[$index]) data.push(self._data[$index]);
+                    });
+                });
+
+                return data;
             }
         }, this.returns);
 
