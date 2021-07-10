@@ -97,8 +97,65 @@ let table = new TableJs(
     [
         ['A12345', 'F500', 'A500', 'V500'],
         ['B23456', 'F500', 'A500', 'V500'],
-        ['C34567', 'F100', 'A500', 'V500'],
+        ['C34567', 'F100', 'A100', 'V100'],
+        ['D45678', 'F100', 'A100', 'V100'],
+        ['E56789', 'F100', 'A110', 'V110'],
     ]
 );
+
+table.WERKS('F100').EKORG('A110').forEach(function ($row) {
+    clog($row[0])
+});
+
+// let materials = table.WERKS('F100').EKORG('A110');
+// clog('Material:', materials);
+
+// for (let r in materials){
+//     let row = materials[r];
+//     let material = row[0];
+// }
+
+
+
+// let f500_data  = table.WERKS('F500');
+// let f100_data  = table.WERKS('F100');
+// let f100_ekorg = table.EKORG('A100', 'A110');
+
+// clog('F500_DATA:',  f500_data, "\n");
+// clog('F100_DATA:',  f100_data, "\n");
+// clog('F100_EKORG:', f100_ekorg, "\n");
+
+// let f100_a100_data = f100_data.EKORG('A100');
+// clog('F100_A100_DATA:', f100_a100_data)
+
+// --------------------------------------------------------------------------
+// Will be returne in for let in
+// Array.prototype.mymethod = function () {
+//     clog("Array.mymethod()");
+// };
+
+
+
+// let tab = new Array();
+//
+// // Object.defineProperty( targ, "myVal", { enumerable: false, writable: true } );
+//
+// Object.defineProperty(tab, 'mymethod', { enumerable: false, writable: true });
+// tab.mymethod = function () {
+//     clog("Array.mymethod() next to defineProperty");
+// };
+//
+// tab.push("A");
+// tab.push("B");
+//
+// tab.mymethod();
+//
+// tab.forEach(function (pty) {
+//     clog('foreach', pty);
+// });
+//
+// for (let pty in tab) {
+//     clog("for let in", pty)
+// }
 
 

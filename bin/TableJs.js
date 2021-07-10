@@ -68,7 +68,7 @@ function TableJs($fields, $array) {
              * @return {TableJs}
              */
             add: function () {
-                let data      = self[`_${this.data}`];
+                let data = self[`_${this.data}`];
 
                 // Pre processor for arguments
                 if (this.callbacks && this.callbacks.add && this.callbacks.add.pre) {
@@ -178,8 +178,25 @@ function TableJs($fields, $array) {
                     });
                 });
 
+                // Extend Array to have method for each field to continue selection
+                self._fields.forEach(function ($field) {
+                    Object.defineProperty(data, $field, {enumerable: false, writable: true });
+                    data[$field] = function () {
+                        // Re-implement TableJs for partial game data
+                        return localTable = new TableJs(
+                            self._fields,
+                            data
+                        )[$field].apply(this, arguments);
+                    }.bind(this);
+                });
+
                 return data;
+            },
+
+            value: function () {
+
             }
+
         }, this.returns);
 
         // Create methods to get from fields
@@ -346,6 +363,7 @@ function TableJs($fields, $array) {
         self.fields($fields);
     }
 
+    // Setting Up Data
     if ($array !== undefined)  {
         self.data($array);
     }
