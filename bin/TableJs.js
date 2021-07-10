@@ -24,7 +24,10 @@ function TableJs($fields, $array) {
     self._fields = [];
     self._keys = [];
     self._data = [];
-    self._indexes = {};
+    self._indexes = {
+        byKeys: {},
+        byFields: {}
+    };
 
     /**
      * Fields, Keys & Data have the same working process.
@@ -41,6 +44,7 @@ function TableJs($fields, $array) {
             return self.core.apply(this).set.apply(this, arguments);
         }
 
+        // Return basic method + those for call (fields, keys or data)
         let returning = Object.assign({
             /**
              * Flush & Set provided arguments values in bound variable name (this.data).
@@ -110,6 +114,14 @@ function TableJs($fields, $array) {
                 return self[`_${this.data}`];
             },
 
+            // WIP
+            indexing: function ($row) {
+                // If no data provided, reindexing all game data.
+                if ($row === undefined) {
+                }
+            },
+
+            // WIP
             values: function () {
 
                 return [];
