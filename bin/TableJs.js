@@ -152,13 +152,13 @@ function TableJs($fields, $array) {
             // WIP
             values: function () {
                 let field = arguments[0];
+                let requestedValues = arguments[1];
                 let values = [];
                 let data = [];
 
                 // Process All argument (except first which is field)
-
-                for (let a = 0; a < arguments[1].length; a++) {
-                    let forValue = arguments[1][a];
+                for (let a = 0; a < requestedValues.length; a++) {
+                    let forValue = requestedValues[a];
 
                     // For common processing, transform string to array
                     if (!(forValue instanceof Array)) {
