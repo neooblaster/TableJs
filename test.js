@@ -3,6 +3,7 @@
 clog = console.log;
 
 const TableJs = require("./bin/TableJs");
+const TableJsV2 = require("./bin/TableJsV2");
 
 let fields = ['Nom', 'Prénom', 'Age'];
 let data = [
@@ -89,6 +90,7 @@ let data = [
 
 
 
+// let table = new TableJsV2(
 let table = new TableJs(
     // Fields
     ['MATNR', 'WERKS', 'EKORG', 'VKORG'],
@@ -103,9 +105,19 @@ let table = new TableJs(
     ]
 );
 
-table.WERKS('F100').EKORG('A110').forEach(function ($row) {
-    clog($row[0])
-});
+table.push('A', 'B', ['A1', 'B1']);
+
+clog(table.MATNR('A12345'));
+
+// let A = ['A'];
+
+// clog(A[0])
+
+
+
+// table.WERKS('F100').EKORG('A110').forEach(function ($row) {
+//     clog($row[0])
+// });
 
 // let materials = table.WERKS('F100').EKORG('A110');
 // clog('Material:', materials);

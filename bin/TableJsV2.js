@@ -60,9 +60,6 @@ function TableJsV2($fields, $array) {
                     nextIndex++;
                 }
 
-                // Re-indexing next to push
-                this.core().indexing();
-
                 return nextIndex;
             }
         },
@@ -213,11 +210,9 @@ function TableJsV2($fields, $array) {
 
                         // Retrieve rows for provided values
                         values.forEach(function ($value) {
-                            if (self._indexes.byFields[field][$value]) {
-                                self._indexes.byFields[field][$value].forEach(function ($index) {
-                                    if (self._data[$index]) data.push(self._data[$index]);
-                                });
-                            }
+                            self._indexes.byFields[field][$value].forEach(function ($index) {
+                                if (self._data[$index]) data.push(self._data[$index]);
+                            });
                         });
 
                         // Extend Array to have method for each field to continue selection
