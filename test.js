@@ -99,15 +99,22 @@ let table = new TableJs(
     [
         ['A12345', 'F500', 'A500', 'V500'],
         ['B23456', 'F500', 'A500', 'V500'],
-        ['C34567', 'F100', 'A100', 'V100'],
-        ['D45678', 'F100', 'A100', 'V100'],
+        ['C34567', 'F100', 'A100', 'V101'],
+        ['D45678', 'F100', 'A100', 'V102'],
         ['E56789', 'F100', 'A110', 'V110'],
     ]
 );
 
-table.push('A', 'B', ['A1', 'B1']);
+// table.WERKS('F100').EKORG('A100').VKORG('V102').forEach(function ($row) {
+//     clog($row, $row.MATNR())
+// });
 
-clog(table.MATNR('A12345'));
+// clog(table.WERKS('F100').EKORG('A100').VKORG('V102').data().getRow(0).MATNR());
+
+
+// table.push('A', 'B', ['A1', 'B1']);
+
+// clog(table.MATNR('A12345'));
 
 // let A = ['A'];
 

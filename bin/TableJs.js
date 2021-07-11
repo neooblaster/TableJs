@@ -19,7 +19,7 @@ clog = console.log;
  */
 
 
-function TableJsV2($fields, $array) {
+function TableJs($fields, $array) {
     let self = this;
 
     self._data = [];
@@ -64,6 +64,25 @@ function TableJsV2($fields, $array) {
                 this.core().indexing();
 
                 return nextIndex;
+            }
+        },
+
+        /**
+         * Rewrite native ForEach method to return row (instead of table)
+         * in callback parameter
+         */
+        forEach: {
+            enumerable: false,
+            writable: false,
+            value: function ($callback) {
+                for (let i in this) {
+                    if(!this.hasOwnProperty(i)) continue;
+                    let entry = new TableJs(
+                        self._fields,
+                        this[i]
+                    );
+                    $callback.call(this, entry.data().getRow(0));
+                }
             }
         },
 
@@ -189,7 +208,14 @@ function TableJsV2($fields, $array) {
                         }
                     },
 
-                    // WIP
+                    /**
+                     * Return rows where the cells respond to the requested values.
+                     *
+                     * @param {String}    arguments[0] Fields to control.
+                     * @param {Arguments} arguments[1] List of value to retrieve.
+                     *
+                     * @return {Array}    Table with corresponding rows.
+                     */
                     values: function () {
                         let field = arguments[0];
                         let requestedValues = arguments[1];
@@ -220,23 +246,19 @@ function TableJsV2($fields, $array) {
                             }
                         });
 
-                        // Extend Array to have method for each field to continue selection
-                        self._fields.forEach(function ($field) {
-                            Object.defineProperty(data, $field, {enumerable: false, writable: true });
-                            data[$field] = function () {
-                                // Re-implement TableJs for partial game data
-                                return localTable = new TableJs(
-                                    self._fields,
-                                    data
-                                )[$field].apply(this, arguments);
-                            }.bind(this);
-                        });
-
-                        return data;
+                        // Result is a part of table, so create a new TableJs
+                        // to get all functionnalities
+                        return new TableJs(
+                            self._fields,
+                            data
+                        );
                     },
 
-                    value: function () {
-
+                    /**
+                     *
+                     */
+                    value: function ($field, $row) {
+                        return $row[self._fields.lastIndexOf($field)];
                     }
 
                 }, this.returns);
@@ -392,6 +414,32 @@ function TableJsV2($fields, $array) {
                         }
 
                         return $row;
+                    },
+
+                    /**
+                     * Return a table row using it index.
+                     *
+                     * @param {Number} $index  Row index starting from 0.
+                     *
+                     * @return {Array} Table row.
+                     */
+                    getRow: function ($index = 0) {
+                        if (typeof $index !== 'number') $index = 0;
+                        let row = self._data[$index];
+
+                        self._fields.forEach(function ($field) {
+
+                            Object.defineProperty(row, $field, {
+                                enumerable: false,
+                                writable: false,
+                                configurable: true,
+                                value: function () {
+                                    return self._data.core.apply(this).value.call(this, $field, row);
+                                }
+                            })
+                        });
+
+                        return row;
                     }
                 };
 
@@ -427,10 +475,11 @@ function TableJsV2($fields, $array) {
         self._data.data($array);
     }
 
+    // Return enhanced Array
     return self._data;
 }
 
-module.exports = TableJsV2;
+module.exports = TableJs;
 
 /**
  * new TableData()
