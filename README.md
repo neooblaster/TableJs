@@ -33,17 +33,17 @@ Please considering the following table data :
 | Canon | 60Da         | 2012 | APS-C      | Astro             |
 | Canon | 250D         | 2019 | APS-C      | Compact           |
 
-To create a new ``TableJs`` you can instantiate it step by step* when
-content is full dynamic or in one shot like this :
+To create a new ``TableJs`` you can instantiate it step by step<sup style="color: red">_*_</sup> 
+when the content is full dynamic or in one shot like this :
 
-* See Detailed Documentation
+<sup style="color: red">_*_</sup> See Detailed Documentation
 
 ````js
 let cameras = new TableJs(
     // List of Fields
     ['Brand', 'Camera', 'Data', 'Format', 'Purpose'],
     
-    // Indicating which field compose the keys
+    // Indicating which fields compose the key
     ['Camera', 'Brand'],
 
     // Table Data
@@ -138,13 +138,13 @@ Purpose List: [
 ### Get rows
 
 The main purpose of ``TableJs`` is to retrieve
-rows where the field value is equal to specified value.
+rows where the field value is equal to specified value(s).
 
-``TableJs`` can select rows for one field at the same time.
+**Important**: ``TableJs`` can select rows for one field at the same time.
 But you can chain fields to complete your selection.
 
 Below, an example to return 
-**all ``Professionnal`` cameras from brand ``Nikon``** :
+all ``Professionnal`` cameras from brand ``Nikon`` :
 
 ````js
 let NikonProCam = cameras.Brand('Nikon').Purpose('Professional');
@@ -152,10 +152,10 @@ console.log('Table Result: ', NikonProCam);
 console.log('New Camera List: ', NikonProCam.Camera());
 ````
 
-The result is a new ``TableJs``* reflecting a part of our initial table
+The result is a new ``TableJs``<sup style="color: red">_*_</sup> reflecting a part of our initial table
 where this part is our result :
 
-* This means all features stay available.
+<sup style="color: red">_*_</sup> This means all features stay available.
 
 ````plaintext
 Table Result: [
@@ -172,7 +172,7 @@ New Camera List: [ 'D3', 'D6' ]
 
 When you are handling a row of your table,
 you can also call method where the name is one of field set,
-but istead of returning distinct value, it returns the value
+but instead of returning distinct value, it returns the value
 of the field.
 
 ````js
@@ -213,11 +213,11 @@ regarding the standard Array method is the ``push`` method.
 In native arrays, ``push`` method add a new value in the table.
 The rewrote method now push a new row instead of unique value.
 So, if you push a unique value, the result will be a new row
-where the first field contain your single value and all other fields with
+where the first field contains your single value and all other fields with
 an empty value.
 If you push an array, if the number of values in your array
 will not match with field number, empty field will be push at the end.
-In case of you have more field than those defined in ``TableJs``, 
+In case of you have more fields than those defined in ``TableJs``, 
 they stay here, but you will not have any method to retrieve them.
 
 Example by pushing a single value :
@@ -293,7 +293,57 @@ Updated Cameras List: [
 ````
 
 
-### Setting (Updating) field value
+### Setting (Updating) field value of one row
+
+**Important**: Keep in mind when you get a new array next to filtering using 
+'field methods', updating a row in the secondary array will update the
+main table.
+
+````js
+let sonyCamera = cameras.Brand('Sony Alpha');
+
+// Update Row where there is no Camera Name
+let inc = 1;
+sonyCamera.Camera('').forEach(function($row){
+    // Camera field is a component of key,
+    // So we have to set a "unique" name for brand (here sony)
+    $row.Camera(`Camera ${inc}`);
+    inc++;
+});
+
+console.log("Updated Sony Alpha Camera", cameras.Brand('Sony Alpha'));
+console.log("Updated Camera Table", cameras);
+````
+
+Result next to the update :
+
+````plaintext
+Updated Sony Alpha Camera Table [
+  [ 'Sony Alpha', 'Camera 1', '', '', '' ],
+  [ 'Sony Alpha', 'α 9 II', '2019', 'Full Frame', 'Sport-Pro' ]
+]
+
+Updated Camera Table [
+  [ 'Nikon', 'D3', '2007', 'Full Frame', 'Professional' ],
+  [ 'Nikon', 'D750', '2014', 'Full Frame', 'Action' ],
+  [ 'Nikon', 'D800', '2011', 'Full Frame', 'Semi-Professional' ],
+  [ 'Nikon', 'D810A', '2015', 'Full Frame', 'Astro' ],
+  [ 'Nikon', 'D7100', '2013', 'APS-C', 'Expert' ],
+  [ 'Nikon', 'D6', '2020', 'Full Frame', 'Professional' ],
+  [ 'Canon', '1Ds Mark III', '2007', 'Full Frame', 'Professional' ],
+  [ 'Canon', '5D Mark II', '2008', 'Full Frame', 'Semi-Professional' ],
+  [ 'Canon', '60Da', '2012', 'APS-C', 'Astro' ],
+  [ 'Canon', '250D', '2019', 'APS-C', 'Compact' ],
+  [ 'Sony Alpha', 'Camera 1', '', '', '' ],
+  [ 'Sony Alpha', 'α 9 II', '2019', 'Full Frame', 'Sport-Pro' ]
+]
+````
+
+
+
+### Setting (Updating) field value of result of rows
+
+
 
 
 

@@ -6,6 +6,7 @@ clog = console.log;
 //         creer une method de parametrage pour désactivé le mode "push herité"
 // @T0D0 : creer une method "Update" pour tourner les fields functions en tant que
 //          setters plutôt que getter : table.FIELD('xxx').update().FIELD('newValue');
+// @TODO : Creer une méthod "Copy" pour detacher les liaison des tables (ou detach)
 
 /**
  * Callback System (Inspired from SAP Exit Concept) :
@@ -193,7 +194,7 @@ function TableJs($fields, $keys, $array) {
                         // Indexing Data ---> Made by Push method
                         // self._data.core.apply(this).indexing();
 
-                        return self;
+                        return self._data;
                     },
 
                     /**
@@ -502,8 +503,8 @@ function TableJs($fields, $keys, $array) {
                                 enumerable: false,
                                 writable: false,
                                 configurable: true,
-                                value: function () {
-                                    return self._data.core.apply(this).value.call(this, $field, $row);
+                                value: function ($value) {
+                                    return self._data.core.apply(this).value.call(this, $field, $row, $value);
                                 }
                             })
                         });
