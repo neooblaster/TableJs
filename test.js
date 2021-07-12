@@ -95,6 +95,9 @@ let table = new TableJs(
     // Fields
     ['MATNR', 'WERKS', 'EKORG', 'VKORG'],
 
+    // Keys
+    [ 'MATNR', 'WERKS'  ],
+
     // Data
     [
         ['A12345', 'F500', 'A500', 'V500'],
@@ -104,6 +107,18 @@ let table = new TableJs(
         ['E56789', 'F100', 'A110', 'V110'],
     ]
 );
+
+// table.push(['F67891', 'F110', 'A111', 'V111']);
+
+table.WERKS('F500').forEach(function ($row) {
+    // clog($row.MATNR())
+});
+
+clog(table.WERKS('F500').MATNR('B23456').data().getRow(0).MATNR());
+
+// clog(table.WERKS('F500').forEach(function ($row) {
+//     clog($row.MATNR())
+// }));
 
 // table.WERKS('F100').EKORG('A100').VKORG('V102').forEach(function ($row) {
 //     clog($row, $row.MATNR())
@@ -119,6 +134,16 @@ let table = new TableJs(
 // let A = ['A'];
 
 // clog(A[0])
+
+// let a = [1,2,4];
+//
+// clog(a)
+//
+// a.forEach(function ($v) {
+//     return $v *= 2;
+// });
+//
+// clog(a);
 
 
 

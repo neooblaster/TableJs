@@ -1,8 +1,9 @@
 clog = console.log;
 
+// @TODO : sur ajout de champs, mettre à jour chaque entrée pour prendre en charge la nouvelle zone
 
 /**
- * Callback System :
+ * Callback System (Inspired from SAP Exit Concept) :
  *  - Core.add() :
  *      - pre,  receive {Arguments},    must return {Arguments}.
  *      - push, receive {String|Array}, must return {String|Array}.
@@ -13,16 +14,20 @@ clog = console.log;
 /**
  *
  * @param $fields
+ * @param $keys
  * @param $array
  * @return {TableJs}
  * @constructor
  */
 
 
-function TableJs($fields, $array) {
+function TableJs($fields, $keys, $array) {
     let self = this;
 
+    // Master Array
     self._data = [];
+
+    // Side Data
     self._fields = [];
     self._keys = [];
     self._indexes = {
@@ -30,8 +35,14 @@ function TableJs($fields, $array) {
         byFields: {}
     };
 
+    /**
+     * Enhance Master Array for chaining features while keeping manipulating Array
+     */
     Object.defineProperties(self._data, {
-        self: {
+        /**
+         * Keeping TableJs reference in Array
+         */
+        instance: {
             enumerable: false,
             writable: false,
             value: self
@@ -56,12 +67,14 @@ function TableJs($fields, $array) {
                         argv = [argv];
                     }
 
-                    this[nextIndex] = this.data().consolidate(argv);
+                    let row =  this.data().consolidate(argv);
+
+                    // Re-indexing next to push
+                    this.core().indexing(row, nextIndex);
+
+                    this[nextIndex] = row;
                     nextIndex++;
                 }
-
-                // Re-indexing next to push
-                this.core().indexing();
 
                 return nextIndex;
             }
@@ -70,6 +83,8 @@ function TableJs($fields, $array) {
         /**
          * Rewrite native ForEach method to return row (instead of table)
          * in callback parameter
+         *
+         * @param {Function} $callback
          */
         forEach: {
             enumerable: false,
@@ -79,6 +94,7 @@ function TableJs($fields, $array) {
                     if(!this.hasOwnProperty(i)) continue;
                     let entry = new TableJs(
                         self._fields,
+                        self._keys,
                         this[i]
                     );
                     $callback.call(this, entry.data().getRow(0));
@@ -167,8 +183,8 @@ function TableJs($fields, $array) {
                             data = this.callbacks.add.post.call(this, data);
                         }
 
-                        // Indexing Data
-                        self._data.core.apply(this).indexing();
+                        // Indexing Data ---> Made by Push method
+                        // self._data.core.apply(this).indexing();
 
                         return self;
                     },
@@ -182,17 +198,29 @@ function TableJs($fields, $array) {
                         return self[`_${this.data}`];
                     },
 
-                    // WIP
-                    indexing: function () {
-                        // Flush Indexes
-                        self._indexes = {
-                            byKeys: {},
-                            byFields: {}
-                        };
+                    /**
+                     * Read data an creates index to easily return values.
+                     */
+                    indexing: function ($row, $index) {
+                        let sourceData = null;
+
+                        // When row is provided, only index the provided row
+                        if ($row !== undefined) {
+                            sourceData = [$row];
+                        }
+                        // Indexing game data
+                        else {
+                            // Flush Indexes
+                            self._indexes = {
+                                byKeys: {},
+                                byFields: {}
+                            };
+                            sourceData = self._data;
+                        }
 
                         // Reading Data
-                        for (let r = 0; r < self._data.length; r++) {
-                            let row = self._data[r];
+                        for (let r = 0; r < sourceData.length; r++) {
+                            let row = sourceData[r];
 
                             // Reading for fields
                             for (let f = 0; f < self._fields.length; f++) {
@@ -201,10 +229,36 @@ function TableJs($fields, $array) {
 
                                 if (!self._indexes.byFields[field]) self._indexes.byFields[field] = {};
                                 if (!self._indexes.byFields[field][value]) self._indexes.byFields[field][value] = [];
-                                self._indexes.byFields[field][value].push(r);
+                                self._indexes.byFields[field][value].push(($index === undefined) ? r : $index);
                             }
 
-                            //
+                            // Reading Key
+                            if (self._keys.length > 0) {
+                                let rowKey = "";
+                                let keyFields = [];
+
+                                // Get fields with their index to have
+                                // a unique key (according to fields definition)
+                                // regardless the order of the key definition.
+                                for (let k = 0; k < self._keys.length; k++) {
+                                    let key = self._keys[k];
+                                    let keyFieldIndex = self._fields.lastIndexOf(key);
+                                    keyFields[keyFieldIndex] = key;
+                                }
+
+                                // Making the unique key
+                                for (let i in keyFields) {
+                                    if(!keyFields.hasOwnProperty(i)) continue;
+                                    rowKey += String(row[i]);
+                                }
+
+                                // Check if the key is not already defined
+                                if (self._indexes.byKeys.hasOwnProperty(rowKey)) {
+                                    throw `Key '${rowKey}' already exist for row index ${self._indexes.byKeys[rowKey]}`;
+                                } else {
+                                    self._indexes.byKeys[rowKey] = ($index === undefined) ? r : $index;
+                                }
+                            }
                         }
                     },
 
@@ -247,15 +301,18 @@ function TableJs($fields, $array) {
                         });
 
                         // Result is a part of table, so create a new TableJs
-                        // to get all functionnalities
+                        // to get all features
                         return new TableJs(
                             self._fields,
+                            self._keys,
                             data
                         );
                     },
 
                     /**
+                     * Return the value of the corresponding field.
                      *
+                     * @return {*}  Value of the field
                      */
                     value: function ($field, $row) {
                         return $row[self._fields.lastIndexOf($field)];
@@ -263,7 +320,7 @@ function TableJs($fields, $array) {
 
                 }, this.returns);
 
-                // Create methods to get from fields
+                // Create methods to get rows from fields
                 let coreContext = this;
                 self._fields.forEach(function ($field) {
                     returning[$field] = function () {
@@ -272,7 +329,7 @@ function TableJs($fields, $array) {
                 });
 
                 // To standardize & for extended functions,
-                // Make function wrapper to bind "this"
+                // Make function wrapper to bind "this".
                 for (let fName in returning) {
                     if (!returning.hasOwnProperty(fName)) continue;
 
@@ -413,6 +470,17 @@ function TableJs($fields, $array) {
                             }
                         }
 
+                        self._fields.forEach(function ($field) {
+                            Object.defineProperty($row, $field, {
+                                enumerable: false,
+                                writable: false,
+                                configurable: true,
+                                value: function () {
+                                    return self._data.core.apply(this).value.call(this, $field, $row);
+                                }
+                            })
+                        });
+
                         return $row;
                     },
 
@@ -425,21 +493,7 @@ function TableJs($fields, $array) {
                      */
                     getRow: function ($index = 0) {
                         if (typeof $index !== 'number') $index = 0;
-                        let row = self._data[$index];
-
-                        self._fields.forEach(function ($field) {
-
-                            Object.defineProperty(row, $field, {
-                                enumerable: false,
-                                writable: false,
-                                configurable: true,
-                                value: function () {
-                                    return self._data.core.apply(this).value.call(this, $field, row);
-                                }
-                            })
-                        });
-
-                        return row;
+                        return self._data[$index];
                     }
                 };
 
@@ -470,6 +524,11 @@ function TableJs($fields, $array) {
         self._data.fields($fields);
     }
 
+    // Setting Up Keys
+    if ($keys !== undefined) {
+        self._data.keys($keys);
+    }
+
     // Setting Up Data
     if ($array !== undefined)  {
         self._data.data($array);
@@ -480,12 +539,3 @@ function TableJs($fields, $array) {
 }
 
 module.exports = TableJs;
-
-/**
- * new TableData()
- * new TableData(['Field_1', 'Field_2', 'Field_3'])
- * new TableData(['Field_1', 'Field_2', 'Field_3'], [['A', '2', '3']])
- * new TableData().setFields()
- *
- *
- */
