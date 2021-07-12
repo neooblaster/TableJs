@@ -1,19 +1,13 @@
 #!/usr/bin/env node
 
 clog = console.log;
+cdir = function ($val) {
+    console.dir($val, {
+        depth: null
+    })
+};
 
 const TableJs = require("./bin/TableJs");
-const TableJsV2 = require("./bin/TableJsV2");
-
-let fields = ['Nom', 'Prénom', 'Age'];
-let data = [
-    ['DUPRE', 'Nicolas', '33'],
-    ['DUPRE', 'Aurélie', '38'],
-    ['MURET', 'Kévin', '32'],
-    ['JESTIN', 'Arnaud', '33'],
-    ['DUPONT', 'Sonya', '29']
-];
-
 
 // Setting Up
 //
@@ -31,6 +25,106 @@ let data = [
 //
 //
 
+// -------------------------------------------------------------------------
+// ---[ I ]-----------------------------------------------------------------
+// -------------------------------------------------------------------------
+clog("-------------------------------------------------------");
+console.log(">>>> Initializing a new TableJs: \n\n");
+
+let cameras = new TableJs(
+    // List of Fields
+    ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
+
+    // Indicating which field compose the keys
+    ['Camera', 'Brand'],
+
+    // Table Data
+    [
+        [ 'Nikon', 'D3', '2007', 'Full Frame', 'Professional' ],
+        [ 'Nikon', 'D750', '2014', 'Full Frame', 'Action' ],
+        [ 'Nikon', 'D800', '2011', 'Full Frame', 'Semi-Professional' ],
+        [ 'Nikon', 'D810A', '2015', 'Full Frame', 'Astro' ],
+        [ 'Nikon', 'D7100', '2013', 'APS-C', 'Expert' ],
+        [ 'Nikon', 'D6', '2020', 'Full Frame', 'Professional' ],
+        [ 'Canon', '1Ds Mark III', '2007', 'Full Frame', 'Professional' ],
+        [ 'Canon', '5D Mark II', '2008', 'Full Frame', 'Semi-Professional' ],
+        [ 'Canon', '60Da', '2012', 'APS-C', 'Astro' ],
+        [ 'Canon', '250D', '2019', 'APS-C', 'Compact' ],
+    ]
+);
+
+console.log(cameras);
+clog("\n-------------------------------------------------------");
+
+
+
+// -------------------------------------------------------------------------
+// ---[ II ]----------------------------------------------------------------
+// -------------------------------------------------------------------------
+console.log(">>>> Get distinct values: \n\n");
+
+console.log('Brand List:', cameras.Brand());
+console.log('Camera List:', cameras.Camera());
+console.log('Date List:', cameras.Date());
+console.log('Format List:', cameras.Format());
+console.log('Purpose List:', cameras.Purpose());
+clog("\n-------------------------------------------------------");
+
+
+
+// -------------------------------------------------------------------------
+// ---[ III ]---------------------------------------------------------------
+// -------------------------------------------------------------------------
+console.log(">>>> Get rows: \n\n");
+
+let NikonProCam = cameras.Brand('Nikon').Purpose('Professional');
+console.log('Table Result:', NikonProCam);
+console.log('New Camera List:', NikonProCam.Camera());
+clog("\n-------------------------------------------------------");
+
+
+
+// -------------------------------------------------------------------------
+// ---[ IV ]----------------------------------------------------------------
+// -------------------------------------------------------------------------
+console.log(">>>> Get field value of row: \n\n");
+
+// Return the camera name of the first entry
+let cameraName = NikonProCam[0].Camera();
+console.log("Camera name of the first row:", cameraName);
+
+
+NikonProCam.forEach(function($row){
+    console.log('Camera: ', $row.Camera());
+});
+clog("\n-------------------------------------------------------");
+
+
+
+// -------------------------------------------------------------------------
+// ---[ V ]------------+----------------------------------------------------
+// -------------------------------------------------------------------------
+console.log(">>>> Appending new rows: \n\n");
+
+cameras.push('Sony Alpha');
+console.log("Updated Cameras table:", cameras);
+
+cameras.push([
+    "Sony Alpha", "α 9 II", "2019", "Full Frame", "Sport-Pro"
+]);
+console.log("Updated 2 Cameras table:", cameras);
+console.log("Updated Cameras List:", cameras.Camera());
+
+clog("\n-------------------------------------------------------");
+
+
+
+// -------------------------------------------------------------------------
+// ---[ VI ]------------+----------------------------------------------------
+// -------------------------------------------------------------------------
+console.log(">>>> Setting (Updating) field value: \n\n");
+
+// cdir(cameras.instance)
 
 // Mode step by step
 // let dataTab1 = new TableJs();
@@ -89,32 +183,32 @@ let data = [
 // clog(DataTable_other.data());
 
 
-
-// let table = new TableJsV2(
-let table = new TableJs(
-    // Fields
-    ['MATNR', 'WERKS', 'EKORG', 'VKORG'],
-
-    // Keys
-    [ 'MATNR', 'WERKS'  ],
-
-    // Data
-    [
-        ['A12345', 'F500', 'A500', 'V500'],
-        ['B23456', 'F500', 'A500', 'V500'],
-        ['C34567', 'F100', 'A100', 'V101'],
-        ['D45678', 'F100', 'A100', 'V102'],
-        ['E56789', 'F100', 'A110', 'V110'],
-    ]
-);
+// let table = new TableJs(
+//     // Fields
+//     ['MATNR', 'WERKS', 'EKORG', 'VKORG'],
+//
+//     // Keys
+//     [ 'MATNR', 'WERKS'  ],
+//
+//     // Data
+//     [
+//         ['A12345', 'F500', 'A500', 'V500'],
+//         ['B23456', 'F500', 'A500', 'V500'],
+//         ['C34567', 'F100', 'A100', 'V101'],
+//         ['D45678', 'F100', 'A100', 'V102'],
+//         ['E56789', 'F100', 'A110', 'V110'],
+//     ]
+// );
+//
+// clog(table.pop().MATNR());
 
 // table.push(['F67891', 'F110', 'A111', 'V111']);
 
-table.WERKS('F500').forEach(function ($row) {
-    // clog($row.MATNR())
-});
+// table.WERKS('F500').forEach(function ($row) {
+//     // clog($row.MATNR())
+// });
 
-clog(table.WERKS('F500').MATNR('B23456').data().getRow(0).MATNR());
+// clog(table.WERKS('F500').MATNR('B23456').data().getRow(0).MATNR());
 
 // clog(table.WERKS('F500').forEach(function ($row) {
 //     clog($row.MATNR())

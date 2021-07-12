@@ -1,6 +1,11 @@
 clog = console.log;
 
 // @TODO : sur ajout de champs, mettre à jour chaque entrée pour prendre en charge la nouvelle zone
+// @TODO : tous les tableJs sont lié au parent (par défaut), ajouter une ligne dans un sous tableJs
+//         ajoutera une entrée dans le parent.
+//         creer une method de parametrage pour désactivé le mode "push herité"
+// @T0D0 : creer une method "Update" pour tourner les fields functions en tant que
+//          setters plutôt que getter : table.FIELD('xxx').update().FIELD('newValue');
 
 /**
  * Callback System (Inspired from SAP Exit Concept) :
@@ -12,15 +17,17 @@ clog = console.log;
  */
 
 /**
+ * Instantiates an enhanced Array, which works as Array with extra features
+ * to manipulates rows/cells.
  *
- * @param $fields
- * @param $keys
- * @param $array
+ * @param {Array} $fields
+ * @param {Array} $keys
+ * @param {Array} $array
+ *
  * @return {TableJs}
+ *
  * @constructor
  */
-
-
 function TableJs($fields, $keys, $array) {
     let self = this;
 
@@ -80,27 +87,27 @@ function TableJs($fields, $keys, $array) {
             }
         },
 
-        /**
-         * Rewrite native ForEach method to return row (instead of table)
-         * in callback parameter
-         *
-         * @param {Function} $callback
-         */
-        forEach: {
-            enumerable: false,
-            writable: false,
-            value: function ($callback) {
-                for (let i in this) {
-                    if(!this.hasOwnProperty(i)) continue;
-                    let entry = new TableJs(
-                        self._fields,
-                        self._keys,
-                        this[i]
-                    );
-                    $callback.call(this, entry.data().getRow(0));
-                }
-            }
-        },
+        // /**
+        //  * Rewrite native ForEach method to return row (instead of table)
+        //  * in callback parameter
+        //  *
+        //  * @param {Function} $callback
+        //  */
+        // forEach: {
+        //     enumerable: false,
+        //     writable: false,
+        //     value: function ($callback) {
+        //         for (let i in this) {
+        //             if(!this.hasOwnProperty(i)) continue;
+        //             let entry = new TableJs(
+        //                 self._fields,
+        //                 self._keys,
+        //                 this[i]
+        //             );
+        //             $callback.call(this, entry.data().getRow(0));
+        //         }
+        //     }
+        // },
 
         /**
          * Fields, Keys & Data have the same working process.
@@ -292,13 +299,22 @@ function TableJs($fields, $keys, $array) {
                         }
 
                         // Retrieve rows for provided values
-                        values.forEach(function ($value) {
-                            if (self._indexes.byFields[field][$value]) {
-                                self._indexes.byFields[field][$value].forEach(function ($index) {
-                                    if (self._data[$index]) data.push(self._data[$index]);
-                                });
+                        if (values.length > 0) {
+                            values.forEach(function ($value) {
+                                if (self._indexes.byFields[field][$value]) {
+                                    self._indexes.byFields[field][$value].forEach(function ($index) {
+                                        if (self._data[$index]) data.push(self._data[$index]);
+                                    });
+                                }
+                            });
+                        } else {
+                            let distinct = [];
+                            for(let value in self._indexes.byFields[field]) {
+                                distinct.push(value);
                             }
-                        });
+                            return distinct;
+                        }
+
 
                         // Result is a part of table, so create a new TableJs
                         // to get all features
@@ -310,12 +326,23 @@ function TableJs($fields, $keys, $array) {
                     },
 
                     /**
-                     * Return the value of the corresponding field.
+                     * Set and/or Return the value of the corresponding field.
                      *
                      * @return {*}  Value of the field
                      */
-                    value: function ($field, $row) {
-                        return $row[self._fields.lastIndexOf($field)];
+                    value: function ($field, $row, $value) {
+                        let fieldIndex = self._fields.lastIndexOf($field);
+
+                        // If a value is set, that implies we want to set
+                        // a new value
+                        if ($value !== undefined) {
+                            // Update all references
+
+                            // Update Locally
+                            $row[fieldIndex] = $value;
+                        }
+
+                        return $row[fieldIndex];
                     }
 
                 }, this.returns);

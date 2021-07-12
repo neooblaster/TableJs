@@ -1,0 +1,26 @@
+{
+  "name": "@neooblaster/tablejs",
+  "version": "0.1.0",
+  "description": "An enhanced Array with extra feature to works as 2D Table",
+  "main": "bin/tablejs.js",
+  "bin": {
+    "tablejs": "TableJs.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neooblaster/tablejs.git"
+  },
+  "keywords": [
+    "Array",
+    "Table"
+  ],
+  "author": "Nicolas DUPRE",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/neooblaster/tablejs/issues"
+  },
+  "homepage": "https://github.com/neooblaster/tablejs#readme"
+}
