@@ -146,10 +146,39 @@ clog("\n-------------------------------------------------------");
 // ---[ VII ]---------------------------------------------------------------
 // -------------------------------------------------------------------------
 
+clog("\n-------------------------------------------------------");
 
 
 
+// -------------------------------------------------------------------------
+// ---[ VIII ]--------------------------------------------------------------
+// -------------------------------------------------------------------------
+let D3Cam  = cameras.Camera('D3');          // Table with 1 row
+let D3Cam2 = D3Cam;                         // This is not a copy
+D3Cam2[0].Camera('D3Rename');               // Rename the camera name
 
+console.log("D3Cam:  ", D3Cam);             // D3 --> D3Rename
+console.log("D3Cam2: ", D3Cam2);            // D3 --> D3Rename
+console.log("Cameras Table: ", cameras);    // D3 --> D3Rename
+
+
+let D6Cam  = cameras.Camera('D6');          // Table with 1 row
+let D6Cam2 = D6Cam.copy();                  // Make a true copy of the table
+D6Cam2[0].Camera('D6Rename');               // Rename the camera name
+
+console.log("D6Cam:  ", D6Cam);             // D6 --> D6
+console.log("D6Cam2: ", D6Cam2);            // D6 --> D6Rename
+console.log("Cameras Table: ", cameras);    // D6 --> D6
+
+
+
+// let cameras2 = cameras.copy();
+// cameras2[0].Camera('D3Edit');
+// clog(cameras, cameras2);
+
+
+
+// -------------------------------------------------------------------------
 
 
 // cdir(cameras.instance)

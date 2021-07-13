@@ -345,6 +345,89 @@ Updated Camera Table [
 
 
 
+### Make a copy of table
+
+As saw previously in chapter ``Setting (Updating) field value of one row``
+and as it in standard, Arrays work with references.
+Updating a row in intermediate variable will update the table.
+
+``TableJs`` comes with a dedicated method named `copy`
+to get a full new table where reference are broken.
+
+Please find below normal bahavior usinf reference
+
+````js
+let D3Cam  = cameras.Camera('D3');          // Table with 1 row
+let D3Cam2 = D3Cam;                         // This is not a copy
+D3Cam2[0].Camera('D3Rename');               // Rename the camera name
+
+console.log("D3Cam:  ", D3Cam);             // D3 --> D3Rename
+console.log("D3Cam2: ", D3Cam2);            // D3 --> D3Rename
+console.log("Cameras Table: ", cameras);    // D3 --> D3Rename
+````
+
+Result
+
+````plaintext
+D3Cam:   [ [ 'Nikon', 'D3Rename', '2007', 'Full Frame', 'Professional' ] ]
+
+D3Cam2:  D3Rename
+
+Cameras Table:  [
+  [ 'Nikon', 'D3Rename', '2007', 'Full Frame', 'Professional' ],       << Also updated
+  [ 'Nikon', 'D750', '2014', 'Full Frame', 'Action' ],
+  [ 'Nikon', 'D800', '2011', 'Full Frame', 'Semi-Professional' ],
+  [ 'Nikon', 'D810A', '2015', 'Full Frame', 'Astro' ],
+  [ 'Nikon', 'D7100', '2013', 'APS-C', 'Expert' ],
+  [ 'Nikon', 'D6', '2020', 'Full Frame', 'Professional' ],
+  [ 'Canon', '1Ds Mark III', '2007', 'Full Frame', 'Professional' ],
+  [ 'Canon', '5D Mark II', '2008', 'Full Frame', 'Semi-Professional' ],
+  [ 'Canon', '60Da', '2012', 'APS-C', 'Astro' ],
+  [ 'Canon', '250D', '2019', 'APS-C', 'Compact' ],
+  [ 'Sony Alpha', 'Camera 1', '', '', '' ],
+  [ 'Sony Alpha', 'α 9 II', '2019', 'Full Frame', 'Sport-Pro' ]
+]
+````
+
+Now the same process using ``copy()`` :
+
+````js
+let D6Cam  = cameras.Camera('D6');          // Table with 1 row
+let D6Cam2 = D6Cam.copy();                  // Make a true copy of the table
+D6Cam2[0].Camera('D6Rename');               // Rename the camera name
+
+console.log("D6Cam:  ", D6Cam);             // D6 --> D6
+console.log("D6Cam2: ", D6Cam2);            // D6 --> D6Rename
+console.log("Cameras Table: ", cameras);    // D6 --> D6
+````
+
+Result :
+
+````plaintext
+D6Cam:   [ [ 'Nikon', 'D6', '2020', 'Full Frame', 'Professional' ] ]
+
+D6Cam2:  [ [ 'Nikon', 'D6Rename', '2020', 'Full Frame', 'Professional' ] ]
+
+Cameras Table:  [
+  [ 'Nikon', 'D3', '2007', 'Full Frame', 'Professional' ],
+  [ 'Nikon', 'D750', '2014', 'Full Frame', 'Action' ],
+  [ 'Nikon', 'D800', '2011', 'Full Frame', 'Semi-Professional' ],
+  [ 'Nikon', 'D810A', '2015', 'Full Frame', 'Astro' ],
+  [ 'Nikon', 'D7100', '2013', 'APS-C', 'Expert' ],
+  [ 'Nikon', 'D6', '2020', 'Full Frame', 'Professional' ],              << Unchange
+  [ 'Canon', '1Ds Mark III', '2007', 'Full Frame', 'Professional' ],
+  [ 'Canon', '5D Mark II', '2008', 'Full Frame', 'Semi-Professional' ],
+  [ 'Canon', '60Da', '2012', 'APS-C', 'Astro' ],
+  [ 'Canon', '250D', '2019', 'APS-C', 'Compact' ],
+  [ 'Sony Alpha', 'Camera 1', '', '', '' ],
+  [ 'Sony Alpha', 'α 9 II', '2019', 'Full Frame', 'Sport-Pro' ]
+]
+````
+
+
+
+
+
 
 
  

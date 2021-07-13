@@ -1,9 +1,6 @@
 clog = console.log;
 
 // @TODO : sur ajout de champs, mettre à jour chaque entrée pour prendre en charge la nouvelle zone
-// @TODO : tous les tableJs sont lié au parent (par défaut), ajouter une ligne dans un sous tableJs
-//         ajoutera une entrée dans le parent.
-//         creer une method de parametrage pour désactivé le mode "push herité"
 // @T0D0 : creer une method "Update" pour tourner les fields functions en tant que
 //          setters plutôt que getter : table.FIELD('xxx').update().FIELD('newValue');
 // @TODO : Creer une méthod "Copy" pour detacher les liaison des tables (ou detach)
@@ -85,6 +82,35 @@ function TableJs($fields, $keys, $array) {
                 }
 
                 return nextIndex;
+            }
+        },
+
+        /**
+         * Make a full new copy of the table (no link between rows)
+         *
+         * @return {TableJs}
+         */
+        copy: {
+            enumerable: false,
+            writable: false,
+            value: function () {
+                let copy = [];
+
+                for (let i in this) {
+                    let row = this[i];
+                    let newRow = [];
+
+                    for (let f in row) {
+                        newRow.push(row[f]);
+                    }
+                    copy.push(newRow)
+                }
+
+                return new TableJs(
+                    self._fields,
+                    self._keys,
+                    copy
+                );
             }
         },
 
