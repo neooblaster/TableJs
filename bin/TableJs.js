@@ -609,6 +609,8 @@ function TableJs($fields, $keys, $array) {
     return self._data;
 }
 
-if (module) {
+try {
     module.exports = TableJs;
+} catch ($err) {
+    // Not in NodeJs or require not available
 }
