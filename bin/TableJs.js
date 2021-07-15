@@ -137,6 +137,22 @@ function TableJs($fields, $keys, $array) {
             }
         },
 
+        delete: {
+            enumerable: false,
+            writable: false,
+            value: function () {
+                return self._data;
+            }
+        },
+
+        insert: {
+            enumerable: false,
+            writable: false,
+            value: function () {
+                return self._data;
+            }
+        },
+
         /**
          * Fields, Keys & Data have the same working process.
          * - Pooling by using Core
@@ -593,4 +609,6 @@ function TableJs($fields, $keys, $array) {
     return self._data;
 }
 
-module.exports = TableJs;
+if (module) {
+    module.exports = TableJs;
+}
