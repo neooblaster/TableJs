@@ -24,15 +24,60 @@ clog = console.log;
  * @constructor
  */
 function TableJs($fields, $keys, $array) {
+
+    // -----------------------------------------------------
+    //    Master Data
+    // -----------------------------------------------------
+    /**
+     * @type {TableJs} Current TableJS Instance.
+     */
     let self = this;
 
-    // Master Array
+    /**
+     * @type {Array} Array which contains data. Master Array
+     * @private
+     */
     self._data = [];
 
-    // Side Data
+
+    // -----------------------------------------------------
+    //    Internal Data
+    // -----------------------------------------------------
+    /**
+     * @type {null|TableJs} Next to a selection, a new TableJs is created and
+     * parent TableJs is link in this property.
+     * @private
+     */
+    self._parent = null;
+
+    /**
+     * @type {Array} List of defined fields.
+     * @private
+     */
     self._fields = [];
+
+    /**
+     * @type {Array} List of defined fields which compose the key.
+     * @private
+     */
     self._keys = [];
+
+    /**
+     * Indexes for performances
+     *
+     * @type {{
+     *      nextId:     number,     Each row must have a unique ID
+     *      deprecated: boolean,    Flag indicating indexes are deprecated
+     *      byId:       {Object},   Return row  index using row ID
+     *      byKeys:     {Object},   Return row  index using row key (composition of fields)
+     *      byFields:   {Object}    Return rows indexes for a value for a field
+     * }}
+     * @private
+     */
     self._indexes = {
+        deprecated: true,
+        nextId: 0,
+        byId: {},
         byKeys: {},
         byFields: {}
     };
@@ -103,6 +148,8 @@ function TableJs($fields, $keys, $array) {
                     copy.push(newRow)
                 }
 
+                // Note : do not attach parent (core().setParent()).
+                // The copy must fully detached.
                 return new TableJs(
                     self._fields,
                     self._keys,
@@ -114,7 +161,7 @@ function TableJs($fields, $keys, $array) {
         /**
          * Update field(s) of selection with provided values
          *
-         * @param {Object}   $newFieldValues Each properties must be the vield with value
+         * @param {Object}   $newFieldValues Each properties must be the field with value
          *
          * @return {Array}
          */
@@ -137,14 +184,43 @@ function TableJs($fields, $keys, $array) {
             }
         },
 
+        /**
+         * Delete rows of the table. Purposed for sub TableJs.
+         *
+         * @return {Array}
+         */
         delete: {
             enumerable: false,
             writable: false,
             value: function () {
+                // The order is very important,
+                // Because on splice, indexes are updated.
+                // We have to process in reversed order.
+                // We have to delete row at same time
+                // Get RowId. Method deleteRows is in charge to delete them in
+                // the appropriate order
+                let rowsId = [];
+
+                this.forEach(function ($row) {
+                    rowsId.push($row.id);
+                });
+
+                this.core().deleteRows(rowsId);
+
+                // Next to the deletion,
+                // We have to update indexes
+                self._data.core().indexing();
+
+                // Parent are deprecated
+                self._data.core().setDeprecated();
+
                 return self._data;
             }
         },
 
+        /**
+         * WIP ?
+         */
         insert: {
             enumerable: false,
             writable: false,
@@ -262,16 +338,23 @@ function TableJs($fields, $keys, $array) {
                         // Indexing game data
                         else {
                             // Flush Indexes
-                            self._indexes = {
-                                byKeys: {},
-                                byFields: {}
-                            };
+                            self._indexes.byId     = {};
+                            self._indexes.byKeys   = {};
+                            self._indexes.byFields = {};
+
                             sourceData = self._data;
+
+                            // Index in now refreshed
+                            self._indexes.deprecated = false;
                         }
 
                         // Reading Data
                         for (let r = 0; r < sourceData.length; r++) {
-                            let row = sourceData[r];
+                            let row   = sourceData[r];
+                            let rowId = row.id;
+
+                            // Read Row Id and store it index
+                            self._indexes.byId[rowId] = ($index === undefined) ? r : $index;
 
                             // Reading for fields
                             for (let f = 0; f < self._fields.length; f++) {
@@ -314,6 +397,52 @@ function TableJs($fields, $keys, $array) {
                     },
 
                     /**
+                     * Indicates the index table is deprecated.
+                     * Reflection for all parents TableJs.
+                     *
+                     * @return {boolean}
+                     */
+                    setDeprecated: function ($parentOnly = false) {
+                        // In some case, we only want to deprecated
+                        // index of parent(s)
+                        if (!$parentOnly) {
+                            self._indexes.deprecated = true;
+                        }
+
+                        if (self._parent) {
+                            self._parent._data.core().setDeprecated();
+                        }
+
+                        return true;
+                    },
+
+                    /**
+                     * Set in current table the parent table for communication.
+                     *
+                     * @param {TableJs} $parent
+                     *
+                     * @return {[]}
+                     */
+                    setParent: function ($parent) {
+                        self._parent = $parent;
+                        self._indexes.nextId = $parent._indexes.nextId;
+
+                        return self._data;
+                    },
+
+                    /**
+                     * Increment for all TableJs the self._indexes.nextId
+                     * when a new row is added.
+                     */
+                    incrementNextId: function () {
+                        self._indexes.nextId++;
+
+                        if (self._parent) {
+                            self._parent._data.core().incrementNextId();
+                        }
+                    },
+
+                    /**
                      * Return rows where the cells respond to the requested values.
                      *
                      * @param {String}    arguments[0] Fields to control.
@@ -344,6 +473,12 @@ function TableJs($fields, $keys, $array) {
 
                         // Retrieve rows for provided values
                         if (values.length > 0) {
+                            // If index is flagged as deprecated,
+                            // perform a full reindex to get right values
+                            if (self._indexes.deprecated) {
+                                this.core().indexing();
+                            }
+
                             values.forEach(function ($value) {
                                 if (self._indexes.byFields[field][$value]) {
                                     self._indexes.byFields[field][$value].forEach(function ($index) {
@@ -366,7 +501,7 @@ function TableJs($fields, $keys, $array) {
                             self._fields,
                             self._keys,
                             data
-                        );
+                        ).core().setParent(self);
                     },
 
                     /**
@@ -380,13 +515,44 @@ function TableJs($fields, $keys, $array) {
                         // If a value is set, that implies we want to set
                         // a new value
                         if ($value !== undefined) {
-                            // Update all references
-
                             // Update Locally
                             $row[fieldIndex] = $value;
+
+                            // Set Index deprecated
+                            self._data.core().setDeprecated();
                         }
 
+                        // In any case, return the current value.
                         return $row[fieldIndex];
+                    },
+
+                    /**
+                     * Delete definitely the provided row (reflected in all parents).
+                     *
+                     * @param {Array} $rowsId  List of Row Id to delete.
+                     */
+                    deleteRows: function ($rowsId) {
+                        // Retrieve indexes for rows ID
+                        let indexes = {};
+
+                        $rowsId.forEach(function ($id) {
+                            indexes[self._indexes.byId[$id]] = $id;
+                        });
+
+                        let reversed = [];
+
+                        for (let idx in indexes) {
+                            reversed.push(parseInt(idx));
+                        }
+
+                        reversed.reverse().forEach(function ($index) {
+                            self._data.splice($index, 1);
+                        });
+
+                        // Delete in all parents
+                        if (self._parent) {
+                            self._parent._data.core().deleteRows($rowsId);
+                        }
                     }
 
                 }, this.returns);
@@ -541,6 +707,24 @@ function TableJs($fields, $keys, $array) {
                             }
                         }
 
+                        // Set a unique Row Id for internal use
+                        let id = $row.id;
+                        if (id === undefined) {
+                            id = self._indexes.nextId;
+                            self._data.core().incrementNextId();
+                        }
+
+                        // Set a unique Id for the row to identify them
+                        // easily internally.
+                        Object.defineProperty($row, 'id', {
+                            enumerable: false,
+                            writable: false,
+                            configurable: true,
+                            value: id
+                        });
+
+                        // Create 'field method' to return/set field value
+                        // for the current row.
                         self._fields.forEach(function ($field) {
                             Object.defineProperty($row, $field, {
                                 enumerable: false,
@@ -549,7 +733,7 @@ function TableJs($fields, $keys, $array) {
                                 value: function ($value) {
                                     return self._data.core.apply(this).value.call(this, $field, $row, $value);
                                 }
-                            })
+                            });
                         });
 
                         return $row;
@@ -573,7 +757,7 @@ function TableJs($fields, $keys, $array) {
                     callbacks: {
                         add: {
                             pre: functions.preprocArgs,
-                            push: functions.consolidate
+                            // push: functions.consolidate //---> Best integrated in Array push rewrited method
                         }
                     },
                     returns: functions
@@ -607,4 +791,10 @@ function TableJs($fields, $keys, $array) {
 
     // Return enhanced Array
     return self._data;
+}
+
+try {
+    module.exports = TableJs;
+} catch ($err) {
+    // Not in NodeJs or require.js not available
 }

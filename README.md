@@ -8,20 +8,32 @@ simplify data selection. The strength of this library is the instantiated
 That means all your knowledge regarding ``Array`` can be applied for
 this object. You have just keep in mind your are working with a 2D Array
 
+It can also used in for Web Site using the following CDN :
+
+````html
+<!-- Do not use "Latest" in production -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/neooblaster/TableJs@main/releases/latest.min.js"></script>
+````
+
+````html
+<!-- Use specified version in production -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/neooblaster/TableJs@main/releases/v0.1.4.min.js"></script>
+````
+
 
 ## Summary
 
 [](BeginSummary)
 * [Summary](#summary)
-* [Getting Started](#getting%20started)
-    * [Initializing a new ``TableJs``](#initializing%20a%20new%20%60%60tablejs%60%60)
-    * [Get distinct values](#get%20distinct%20values)
-    * [Get rows](#get%20rows)
-    * [Get field value of row](#get%20field%20value%20of%20row)
-    * [Appending new rows](#appending%20new%20rows)
-    * [Setting (Updating) field value of one row](#setting%20(updating)%20field%20value%20of%20one%20row)
-    * [Setting (Updating) field value of result of rows](#setting%20(updating)%20field%20value%20of%20result%20of%20rows)
-    * [Make a copy of table](#make%20a%20copy%20of%20table)
+* [Getting Started](#getting-started)
+    * [Initializing a new ``TableJs``](#initializing-a-new-tablejs)
+    * [Get distinct values](#get-distinct-values)
+    * [Get rows](#get-rows)
+    * [Get field value of row](#get-field-value-of-row)
+    * [Appending new rows](#appending-new-rows)
+    * [Setting (Updating) field value of one row](#setting-updating-field-value-of-one-row)
+    * [Setting (Updating) field value of result of rows](#setting-updating-field-value-of-result-of-rows)
+    * [Make a copy of table](#make-a-copy-of-table)
 [](EndSummary)
 
 
@@ -53,10 +65,11 @@ when the content is full dynamic or in one shot like this :
 
 ````js
 let cameras = new TableJs(
-    // List of Fields
+    // List of Fields (At least one required)
     ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
     
     // Indicating which fields compose the key
+    // -> Optional, but at least empty Array must be passed
     ['Camera', 'Brand'],
 
     // Table Data
@@ -370,7 +383,7 @@ to a detailed version ``Full Frame (24x36)`` :
 cameras.Format('Full Frame').update({
     Format: 'Full Frame(24x36)'
 });
-clog("Updated Table:", cameras);
+console.log("Updated Table:", cameras);
 ````
 
 Properties of the object passed to the method ``update()``
@@ -396,6 +409,41 @@ Updated Table: [
 ]
 
 ````
+
+
+
+### Delete rows from the table
+
+In the same way of method ``update()`` which allows you to make a mass update,
+you can massively delete rows next to a selection.
+The method is ``delete()`` and it purposed to used next to a selection
+made by calling _'field method'_.
+Called on the main table, it will drop entirely the table.
+
+Below an example to clear all ``APS-C`` Camera in the table :
+
+````js
+cameras.Format('APS-C').delete();
+console.log(cameras);
+````
+
+result :
+
+````plaintext
+[
+  [ 'Nikon', 'D3Rename', '2007', 'Full Frame(24x36)', 'Professional' ],
+  [ 'Nikon', 'D750', '2014', 'Full Frame(24x36)', 'Action' ],
+  [ 'Nikon', 'D800', '2011', 'Full Frame(24x36)', 'Semi-Professional' ],
+  [ 'Nikon', 'D810A', '2015', 'Full Frame(24x36)', 'Astro' ],
+  [ 'Nikon', 'D6', '2020', 'Full Frame(24x36)', 'Professional' ],
+  [ 'Canon', '1Ds Mark III', '2007', 'Full Frame(24x36)', 'Professional' ],
+  [ 'Canon', '5D Mark II', '2008', 'Full Frame(24x36)', 'Semi-Professional' ],
+  [ 'Sony Alpha', 'Camera 1', '', '', '' ],
+  [ 'Sony Alpha', 'α 9 II', '2019', 'Full Frame(24x36)', 'Sport-Pro' ]
+]
+````
+
+
 
 
 

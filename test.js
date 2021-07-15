@@ -151,15 +151,17 @@ console.log(">>>> Setting (Updating) field value of result of rows: \n\n");
 cameras.Format('Full Frame').update({
     Format: 'Full Frame(24x36)'
 });
-clog("Updated Table:", cameras);
+console.log("Updated Table:", cameras);
 
-clog("\n-------------------------------------------------------");
+console.log("\n-------------------------------------------------------");
 
 
 
 // -------------------------------------------------------------------------
 // ---[ VIII ]--------------------------------------------------------------
 // -------------------------------------------------------------------------
+console.log(">>>> Make a copy of table: \n\n");
+
 let D3Cam  = cameras.Camera('D3');          // Table with 1 row
 let D3Cam2 = D3Cam;                         // This is not a copy
 D3Cam2[0].Camera('D3Rename');               // Rename the camera name
@@ -177,7 +179,34 @@ console.log("D6Cam:  ", D6Cam);             // D6 --> D6
 console.log("D6Cam2: ", D6Cam2);            // D6 --> D6Rename
 console.log("Cameras Table: ", cameras);    // D6 --> D6
 
+console.log("\n-------------------------------------------------------");
 
+
+
+// -------------------------------------------------------------------------
+// ---[ IX ]----------------------------------------------------------------
+// -------------------------------------------------------------------------
+console.log(">>>> Delete rows from the table: \n\n");
+
+cameras.Format('APS-C').delete();
+console.log(cameras);
+
+console.log("\n-------------------------------------------------------");
+
+
+
+// cameras.forEach(function ($row) {
+//     clog($row.id)
+// });
+// clog(cameras);
+// clog()
+// clog(cameras.Brand('Nikon'));
+// clog()
+// clog(cameras.Brand('Nikon').delete());
+// clog()
+// clog(cameras);
+// clog("Sony Cam :", cameras.Brand('Nikon').delete());
+// clog("Camera List:", cameras);
 
 // -------------------------------------------------------------------------
 
