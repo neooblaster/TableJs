@@ -1,28 +1,25 @@
+// Temp for dev
 clog = console.log;
 
 // @TODO : sur ajout de champs, mettre à jour chaque entrée pour prendre en charge la nouvelle zone
-// @T0D0 : creer une method "Update" pour tourner les fields functions en tant que
-//          setters plutôt que getter : table.FIELD('xxx').update().FIELD('newValue');
-// @TODO : Creer une méthod "Copy" pour detacher les liaison des tables (ou detach)
-
-/**
- * Callback System (Inspired from SAP Exit Concept) :
- *  - Core.add() :
- *      - pre,  receive {Arguments},    must return {Arguments}.
- *      - push, receive {String|Array}, must return {String|Array}.
- *      - post, receive {Array},        must return {Array}.
- *
- */
+// @TODO : Mettre à jour les @return (JSODC)
 
 /**
  * Instantiates an enhanced Array, which works as Array with extra features
  * to manipulates rows/cells.
  *
- * @param {Array} $fields
- * @param {Array} $keys
- * @param {Array} $array
+ * Callback System (Inspired from SAP Enhancement Concept) :
+ *  - Core.add() :
+ *      - pre,  receive {Arguments},    must return {Arguments}.
+ *      - push, receive {String|Array}, must return {String|Array}.
+ *      - post, receive {Array},        must return {Array}.
  *
- * @return {TableJs}
+ *
+ * @param {Array} $fields  Field list of the new table.
+ * @param {Array} $keys    Field from field list which will compose the unique key.
+ * @param {Array} $array   2D Table data.
+ *
+ * @return {Array}
  *
  * @constructor
  */
@@ -114,27 +111,31 @@ function TableJs($fields, $keys, $array) {
             }
         },
 
-        // /**
-        //  * Rewrite native ForEach method to return row (instead of table)
-        //  * in callback parameter
-        //  *
-        //  * @param {Function} $callback
-        //  */
-        // forEach: {
-        //     enumerable: false,
-        //     writable: false,
-        //     value: function ($callback) {
-        //         for (let i in this) {
-        //             if(!this.hasOwnProperty(i)) continue;
-        //             let entry = new TableJs(
-        //                 self._fields,
-        //                 self._keys,
-        //                 this[i]
-        //             );
-        //             $callback.call(this, entry.data().getRow(0));
-        //         }
-        //     }
-        // },
+        /**
+         * Update field(s) of selection with provided values
+         *
+         * @param {Object}   $newFieldValues Each properties must be the vield with value
+         *
+         * @return {Array}
+         */
+        update: {
+            enumerable: false,
+            writable: false,
+            value: function ($newFieldValues) {
+                for (let field in $newFieldValues) {
+                    if(!$newFieldValues.hasOwnProperty(field)) continue;
+                    // Check if function exist (to prevent issues for wrong property in update)
+                    if (!this.hasOwnProperty(field)) continue;
+
+                    // Make this update
+                    this.forEach(function ($row) {
+                        $row[field]($newFieldValues[field]);
+                    });
+                }
+
+                return self._data;
+            }
+        },
 
         /**
          * Fields, Keys & Data have the same working process.

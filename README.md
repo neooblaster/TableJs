@@ -11,6 +11,19 @@ this object. You have just keep in mind your are working with a 2D Array
 
 ## Summary
 
+[](BeginSummary)
+* [Summary](#summary)
+* [Getting Started](#getting%20started)
+    * [Initializing a new ``TableJs``](#initializing%20a%20new%20%60%60tablejs%60%60)
+    * [Get distinct values](#get%20distinct%20values)
+    * [Get rows](#get%20rows)
+    * [Get field value of row](#get%20field%20value%20of%20row)
+    * [Appending new rows](#appending%20new%20rows)
+    * [Setting (Updating) field value of one row](#setting%20(updating)%20field%20value%20of%20one%20row)
+    * [Setting (Updating) field value of result of rows](#setting%20(updating)%20field%20value%20of%20result%20of%20rows)
+    * [Make a copy of table](#make%20a%20copy%20of%20table)
+[](EndSummary)
+
 
 
 ## Getting Started
@@ -41,7 +54,7 @@ when the content is full dynamic or in one shot like this :
 ````js
 let cameras = new TableJs(
     // List of Fields
-    ['Brand', 'Camera', 'Data', 'Format', 'Purpose'],
+    ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
     
     // Indicating which fields compose the key
     ['Camera', 'Brand'],
@@ -59,7 +72,7 @@ let cameras = new TableJs(
         [ 'Canon', '60Da', '2012', 'APS-C', 'Astro' ],
         [ 'Canon', '250D', '2019', 'APS-C', 'Compact' ],
     ]
-)
+);
 ````
 
 Result is the following Array :
@@ -82,6 +95,9 @@ console.log(cameras);
   [ 'Canon', '250D', '2019', 'APS-C', 'Compact' ]
 ]
 ````
+
+**Important** : As field name will become methods for the table, 
+the name must respect **JavaScript** function naming convention.
 
 
 
@@ -224,7 +240,7 @@ Example by pushing a single value :
 
 ````js
 cameras.push('Sony Alpha');
-console.log("Updated Cameras table:", camera);
+console.log("Updated Cameras table:", cameras);
 ````
 
 result :
@@ -343,6 +359,44 @@ Updated Camera Table [
 
 ### Setting (Updating) field value of result of rows
 
+To prevent you to make a ``forEach`` loop on the array,
+you can use method ``update()`` to set new field(s) value
+of you table or you filtered selection.
+
+Below an example to update the **Format** ``Full Frame``
+to a detailed version ``Full Frame (24x36)`` :
+
+````js
+cameras.Format('Full Frame').update({
+    Format: 'Full Frame(24x36)'
+});
+clog("Updated Table:", cameras);
+````
+
+Properties of the object passed to the method ``update()``
+are the name of defined field.
+
+The result is :
+
+````plaintext
+// <<< is pointing updated lines
+Updated Table: [
+  [ 'Nikon', 'D3', '2007', 'Full Frame(24x36)', 'Professional' ],              <<<
+  [ 'Nikon', 'D750', '2014', 'Full Frame(24x36)', 'Action' ],                  <<<
+  [ 'Nikon', 'D800', '2011', 'Full Frame(24x36)', 'Semi-Professional' ],       <<<
+  [ 'Nikon', 'D810A', '2015', 'Full Frame(24x36)', 'Astro' ],                  <<<
+  [ 'Nikon', 'D7100', '2013', 'APS-C', 'Expert' ],
+  [ 'Nikon', 'D6', '2020', 'Full Frame(24x36)', 'Professional' ],              <<<
+  [ 'Canon', '1Ds Mark III', '2007', 'Full Frame(24x36)', 'Professional' ],    <<<
+  [ 'Canon', '5D Mark II', '2008', 'Full Frame(24x36)', 'Semi-Professional' ], <<<
+  [ 'Canon', '60Da', '2012', 'APS-C', 'Astro' ],
+  [ 'Canon', '250D', '2019', 'APS-C', 'Compact' ],
+  [ 'Sony Alpha', 'Camera 1', '', '', '' ],
+  [ 'Sony Alpha', 'α 9 II', '2019', 'Full Frame(24x36)', 'Sport-Pro' ]         <<<
+]
+
+````
+
 
 
 ### Make a copy of table
@@ -354,7 +408,7 @@ Updating a row in intermediate variable will update the table.
 ``TableJs`` comes with a dedicated method named `copy`
 to get a full new table where reference are broken.
 
-Please find below normal bahavior usinf reference
+Please find below normal behavior using reference
 
 ````js
 let D3Cam  = cameras.Camera('D3');          // Table with 1 row

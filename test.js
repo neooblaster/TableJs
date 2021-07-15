@@ -36,7 +36,8 @@ let cameras = new TableJs(
     ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
 
     // Indicating which field compose the keys
-    ['Camera', 'Brand'],
+    // ['Camera', 'Brand'],
+    [],
 
     // Table Data
     [
@@ -145,6 +146,12 @@ clog("\n-------------------------------------------------------");
 // -------------------------------------------------------------------------
 // ---[ VII ]---------------------------------------------------------------
 // -------------------------------------------------------------------------
+console.log(">>>> Setting (Updating) field value of result of rows: \n\n");
+
+cameras.Format('Full Frame').update({
+    Format: 'Full Frame(24x36)'
+});
+clog("Updated Table:", cameras);
 
 clog("\n-------------------------------------------------------");
 
@@ -172,13 +179,25 @@ console.log("Cameras Table: ", cameras);    // D6 --> D6
 
 
 
-// let cameras2 = cameras.copy();
-// cameras2[0].Camera('D3Edit');
-// clog(cameras, cameras2);
-
-
-
 // -------------------------------------------------------------------------
+
+
+// cameras.Brand('Nikon').forEach(function ($row) {
+//     clog($row.Camera());
+// });
+
+
+// clog('Before Update:', cameras.Brand('Nikon'));
+// cameras.Brand('Nikon').update({
+//     Brand: 'BRD',
+//     Camera: 'CAM',
+//     Date: 'DAT',
+//     Format: "FRT",
+//     Purpose: 'PRP',
+//     test: ''
+// });
+// clog('After Update:', cameras.Brand('Nikon'));
+
 
 
 // cdir(cameras.instance)
