@@ -1,7 +1,6 @@
 // Temp for dev
 clog = console.log;
 
-// @TODO : sur ajout de champs, mettre à jour chaque entrée pour prendre en charge la nouvelle zone
 // @TODO : Mettre à jour les @return (JSODC)
 
 /**
@@ -10,9 +9,9 @@ clog = console.log;
  *
  * Callback System (Inspired from SAP Enhancement Concept) :
  *  - Core.add() :
- *      - pre,  receive {Arguments},    must return {Arguments}.
- *      - push, receive {String|Array}, must return {String|Array}.
- *      - post, receive {Array},        must return {Array}.
+ *      - pre,  receive {Arguments} func params,           must return {Arguments}.
+ *      - push, receive {String|Array} one argument value, must return {String|Array}.
+ *      - post, receive {Array} on game data,              must return {Array}.
  *
  *
  * @param {Array} $fields  Field list of the new table.
@@ -212,7 +211,7 @@ function TableJs($fields, $keys, $array) {
                 self._data.core().indexing();
 
                 // Parent are deprecated
-                self._data.core().setDeprecated();
+                self._data.core().setDeprecated(true);
 
                 return self._data;
             }
@@ -353,7 +352,7 @@ function TableJs($fields, $keys, $array) {
                             let row   = sourceData[r];
                             let rowId = row.id;
 
-                            // Read Row Id and store it index
+                            // Read Row Id and store its index
                             self._indexes.byId[rowId] = ($index === undefined) ? r : $index;
 
                             // Reading for fields
@@ -590,6 +589,16 @@ function TableJs($fields, $keys, $array) {
             writable: false,
             value: function () {
                 let functions = {
+                    /**
+                     * Define new property which is a function where the name
+                     * is the provided field name.
+                     *
+                     * Purpose : Core().add()/push callback point.
+                     *
+                     * @param {String} $field
+                     *
+                     * @return {*}
+                     */
                     createMethod: function ($field) {
                         Object.defineProperty(self._data, $field, {
                             enumerable: false,
@@ -600,6 +609,25 @@ function TableJs($fields, $keys, $array) {
                         });
 
                         return $field;
+                    },
+
+                    /**
+                     * Process all existing entries to consolidate rows according
+                     * to the current field list.
+                     *
+                     * Purpose : Core().add()/post callback point.
+                     *
+                     * @param {Array} $fields In its context, receive field list
+                     *
+                     */
+                    consolidateAll: function ($fields) {
+                        if (self._data.length > 0) {
+                            self._data = self._data.map(function ($row) {
+                                return self._data.data().consolidate($row);
+                            });
+                        }
+
+                        return $fields;
                     }
                 };
 
@@ -607,7 +635,8 @@ function TableJs($fields, $keys, $array) {
                     data: 'fields',
                     callbacks: {
                         add: {
-                            push: functions.createMethod
+                            push: functions.createMethod,
+                            post: functions.consolidateAll
                         }
                     },
                     returns: functions
@@ -665,6 +694,8 @@ function TableJs($fields, $keys, $array) {
 
                     /**
                      * Wraps array of string into an array to become data matrix.
+                     *
+                     * Purpose : Core().add()/pre callback point.
                      *
                      * @return {IArguments}
                      */

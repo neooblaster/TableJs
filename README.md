@@ -17,7 +17,7 @@ It can also used in for Web Site using the following CDN :
 
 ````html
 <!-- Use specified version in production -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/neooblaster/TableJs@main/releases/v0.1.4.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/neooblaster/TableJs@main/releases/v0.1.x.min.js"></script>
 ````
 
 
@@ -33,7 +33,29 @@ It can also used in for Web Site using the following CDN :
     * [Appending new rows](#appending-new-rows)
     * [Setting (Updating) field value of one row](#setting-updating-field-value-of-one-row)
     * [Setting (Updating) field value of result of rows](#setting-updating-field-value-of-result-of-rows)
+    * [Delete rows from the table](#delete-rows-from-the-table)
     * [Make a copy of table](#make-a-copy-of-table)
+* [Detailed documentation](#detailed-documentation)
+    * [Minimal Instantiation](#minimal-instantiation)
+    * [Managing fields](#managing-fields)
+        * [Method ``set``](#method-set)
+        * [Method ``add``](#method-add)
+        * [Method ``get``](#method-get)
+    * [Managing keys](#managing-keys)
+        * [Method ``set``](#method-set)
+        * [Method ``add``](#method-add)
+        * [Method ``get``](#method-get)
+    * [Managing Data](#managing-data)
+        * [Method ``set``](#method-set)
+        * [Method ``add`` (Alias `append`)](#method-add-alias-append)
+        * [Method ``get``](#method-get)
+        * [Method ``getRow``](#method-getrow)
+    * [Dynamic Methods](#dynamic-methods)
+        * [Method ``MyField()`` on the Array](#method-myfield-on-the-array)
+        * [Method ``MyField()`` on a row of the Array](#method-myfield-on-a-row-of-the-array)
+    * [Extra method](#extra-method)
+        * [Method ``setDeprecated``](#method-setdeprecated)
+        * [Method ``deleteRow``](#method-deleterow)
 [](EndSummary)
 
 
@@ -527,9 +549,129 @@ Cameras Table:  [
 ````
 
 
+For more feature, please confer to **detailed documentation**.
 
 
 
+
+
+## Detailed documentation
+
+From this point, you will find the detailed documentation with all
+user method. Internal method will not be detailed (even if they are callable).
+
+
+### Minimal Instantiation
+
+You can easily create a new **TableJs** instance like this :
+
+````js
+let cameras = new TableJs(); // Will return an empty Array
+````
+
+
+
+### Managing fields
+
+Field can be managed later next to the **TableJs** instantiation.
+That allows you to use **TableJs** dynamically.
+
+Fields manager is available from your array and return some sub method : 
+``cameras.fields()``.
+
+
+
+#### Method ``set``
+
+The method ``set()`` defines the field list.
+This method will overwrite existing field list.
+If you only want to add a new field, please confer to method
+``add()``.
+
+It accept none to many argument with following type :
+* **String**
+* **Array** of **String**
+
+**Important**: Field name must respect the naming convention of functions name.
+For instance, a field can not start with a number.
+
+Sample :
+
+````js
+let cameras = new TableJs(); // Will return an empty Array
+
+cameras.fields().set( 'Field1', 'Field2', ['Field3', 'Field4'] );
+````
+
+Each defined field will generates a method on the **Array** and
+on each **rows** of the Array.
+Please confer chapter ``Dynamic Methods`` in this **detailed documentation**.
+
+
+
+#### Method ``add``
+
+
+
+
+#### Method ``get``
+
+
+
+
+
+
+### Managing keys
+
+
+#### Method ``set``
+
+#### Method ``add``
+
+#### Method ``get``
+
+
+
+
+
+
+### Managing Data
+
+
+#### Method ``set``
+
+#### Method ``add`` (Alias `append`)
+
+#### Method ``get``
+
+#### Method ``getRow``
+
+
+
+
+
+
+### Dynamic Methods
+
+Each defined field will generates a method on the **Array** and
+on each **rows** of the Array.
+
+
+#### Method ``MyField()`` on the Array
+
+
+#### Method ``MyField()`` on a row of the Array
+
+
+
+
+
+
+### Extra method
+
+#### Method ``setDeprecated``
+
+#### Method ``deleteRow``
 
 
  
