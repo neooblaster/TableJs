@@ -2,12 +2,12 @@
   "name": "@neooblaster/tablejs",
   "version": "0.1.6",
   "description": "An enhanced Array with extra feature to works as 2D Table",
-  "main": "bin/TableJs.js",
+  "main": "bin/tablejs.js",
   "bin": {
-    "tablejs": "TableJs.js"
+    "tablejs": "bin/tablejs.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": ""
   },
   "repository": {
     "type": "git",

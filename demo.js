@@ -22,8 +22,7 @@ let cameras = new TableJs(
     ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
 
     // Indicating which field compose the keys
-    // ['Camera', 'Brand'],
-    [],
+    ['Camera', 'Brand'],
 
     // Table Data
     [

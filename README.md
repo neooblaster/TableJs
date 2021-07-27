@@ -1,6 +1,13 @@
 # TableJs
 
+[![Package quality](https://packagequality.com/shield/yourpackage.svg)](https://packagequality.com/#?package=@neooblaster/tablejs)
+
 > An enhanced Array with extra features to works as 2D Table
+
+> The library is currently in DEV and README.md as well.
+> You can use it for development & tests (for feedback).
+> Main features are available. v1.0.0 will be released when
+> coverage test will be done.
 
 ``TableJs`` is a little library to create a **2D Array** (Rows with Cells) to
 simplify data selection. The strength of this library is the instantiated
@@ -61,6 +68,9 @@ It can also used in for Web Site using the following CDN :
 
 
 ## Getting Started
+
+You can confer to file ``demo.js`` to retrieve back / execute the
+**Getting Started** documentation.
 
 
 ### Initializing a new ``TableJs``
@@ -550,6 +560,9 @@ Cameras Table:  [
 
 
 For more feature, please confer to **detailed documentation**.
+
+<hr />
+
 
 
 
