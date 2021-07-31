@@ -109,7 +109,7 @@ function TableJs($fields, $keys, $array) {
                     if(!arguments.hasOwnProperty(a)) continue;
                     let argv = arguments[a];
 
-                    if (!(argv instanceof Array)) {
+                    if (!(Object.prototype.toString.call(argv) === "[object Array]")) {
                         argv = [argv];
                     }
 
@@ -277,11 +277,12 @@ function TableJs($fields, $keys, $array) {
                         }
 
                         // Process arguments
+                        // Process arguments
                         for (let a = 0; a < arguments.length; a++) {
                             let argv = arguments[a];
 
                             // Argument value is an Array
-                            if (argv instanceof Array) {
+                            if (Object.prototype.toString.call(argv) === "[object Array]") {
                                 argv.forEach(function ($value) {
                                     if (data.lastIndexOf($value) < 0) {
                                         if (this.callbacks && this.callbacks.add && this.callbacks.add.push) {
@@ -476,7 +477,7 @@ function TableJs($fields, $keys, $array) {
                             let forValue = requestedValues[a];
 
                             // For common processing, transform string to array
-                            if (!(forValue instanceof Array)) {
+                            if (!(Object.prototype.toString.call(forValue) === "[object Array]")) {
                                 forValue = [forValue];
                             }
 
@@ -720,7 +721,7 @@ function TableJs($fields, $keys, $array) {
                             if(!arguments.hasOwnProperty(i)) continue;
                             let argv = arguments[i];
 
-                            if (argv instanceof Array) {
+                            if (Object.prototype.toString.call(argv) === "[object Array]") {
                                 if (argv.length > 0) {
                                     if (typeof argv[0] === 'string') {
                                         arguments[i] = [argv];
