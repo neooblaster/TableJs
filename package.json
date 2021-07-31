@@ -1,6 +1,6 @@
 {
   "name": "@neooblaster/tablejs",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "An enhanced Array with extra feature to works as 2D Table",
   "main": "bin/tablejs.js",
   "bin": {
