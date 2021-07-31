@@ -301,6 +301,22 @@ function TableJs($fields, $keys, $array) {
                                 }
                             } else {
                                 // What can we do for other type ?
+                                //
+                                // Note : TestComplete not able to see arguments
+                                // passed directly with bracket as an instance of Array
+                                // For unknown, try as object which is an table
+                                try {
+                                    argv.forEach(function ($value) {
+                                        if (data.lastIndexOf($value) < 0) {
+                                            if (this.callbacks && this.callbacks.add && this.callbacks.add.push) {
+                                                $value = this.callbacks.add.push.call(this, $value);
+                                            }
+                                            data.push($value);
+                                        }
+                                    }.bind(this));
+                                } catch ($err) {
+
+                                }
                             }
                         }
 
