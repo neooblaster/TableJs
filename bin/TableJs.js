@@ -229,6 +229,20 @@ function TableJs($fields, $keys, $array) {
         },
 
         /**
+         * Return indexes table. Not purpose for handling but to take acknowledge
+         * about data.
+         *
+         * @return {object}
+         */
+        indexes: {
+            enumerable: false,
+            writable: false,
+            value: function () {
+                return self._indexes;
+            }
+        },
+
+        /**
          * Fields, Keys & Data have the same working process.
          * - Pooling by using Core
          * - Specialisation using callbacks
@@ -276,7 +290,6 @@ function TableJs($fields, $keys, $array) {
                             arguments = this.callbacks.add.pre.apply(this, arguments);
                         }
 
-                        // Process arguments
                         // Process arguments
                         for (let a = 0; a < arguments.length; a++) {
                             let argv = arguments[a];
