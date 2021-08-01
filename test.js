@@ -7,12 +7,66 @@ cdir = function ($val) {
     })
 };
 
+
+//-----------------------------------------------------------------------------/
+//---[ Working Area ]----------------------------------------------------------/
+//-----------------------------------------------------------------------------/
 const TableJs = require("./bin/TableJs");
 
 let cameras = new TableJs();
 cameras.fields().set('STRING', 'MORE', ['PACK_1', 'PACK_2']);
 clog(cameras.fields().get());
 
+
+
+
+//-----------------------------------------------------------------------------/
+//---[ Test .keys().set() ]----------------------------------------------------/
+//-----------------------------------------------------------------------------/
+/**
+ * Test to check if postponed keys addition will update index byKeys.
+ *
+ */
+// let cameras = new TableJs(
+//     // List of Fields
+//     ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
+//
+//     // Indicating which field compose the keys
+//     // ['Camera', 'Brand'],
+//     [],
+//
+//     // Table Data
+//     [
+//         [ 'Nikon', 'D3', '2007', 'Full Frame', 'Professional' ],
+//         [ 'Nikon', 'D750', '2014', 'Full Frame', 'Action' ],
+//         [ 'Nikon', 'D800', '2011', 'Full Frame', 'Semi-Professional' ],
+//         [ 'Nikon', 'D810A', '2015', 'Full Frame', 'Astro' ],
+//         [ 'Nikon', 'D7100', '2013', 'APS-C', 'Expert' ],
+//         [ 'Nikon', 'D6', '2020', 'Full Frame', 'Professional' ],
+//         [ 'Canon', '1Ds Mark III', '2007', 'Full Frame', 'Professional' ],
+//         [ 'Canon', '5D Mark II', '2008', 'Full Frame', 'Semi-Professional' ],
+//         [ 'Canon', '60Da', '2012', 'APS-C', 'Astro' ],
+//         [ 'Canon', '250D', '2019', 'APS-C', 'Compact' ],
+//     ]
+// );
+//
+// cdir(cameras.indexes());
+//
+// // Postpone settings keys field
+// cameras.keys().set(['Brand', 'Camera']);
+//
+// cdir(cameras.indexes());
+//
+// // Postpone settings keys field
+// cameras.keys().set(['Brand', 'Camera', 'Date']);
+//
+// cdir(cameras.indexes());
+
+
+
+//-----------------------------------------------------------------------------/
+//-----------------------------------------------------------------------------/
+//-----------------------------------------------------------------------------/
 
 
 
