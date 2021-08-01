@@ -417,7 +417,14 @@ function TableJs($fields, $keys, $array) {
 
                                 // Check if the key is not already defined
                                 if (self._indexes.byKeys.hasOwnProperty(rowKey)) {
-                                    throw `Key '${rowKey}' already exist for row index ${self._indexes.byKeys[rowKey]}`;
+                                    let message = `Error : The generated key '${rowKey}' already exist for the row index ${self._indexes.byKeys[rowKey]}\n`;
+                                    message += `You should add some fields as key component or check your data.\n`;
+                                    message += `Your selected fields for the unique keys are : \n`;
+                                    self._keys.map(function($field){
+                                        message += ` • ${$field}\n`;
+                                    });
+
+                                    throw message ;
                                 } else {
                                     self._indexes.byKeys[rowKey] = ($index === undefined) ? r : $index;
                                 }
@@ -686,12 +693,62 @@ function TableJs($fields, $keys, $array) {
             writable: false,
             value: function () {
                 let functions = {
+                    /**
+                     *
+                     * @param $field
+                     * @return {*}
+                     */
 
+
+                    /**
+                     * Before pushing the requested field as key, check if the field
+                     * is defined.
+                     *
+                     * Purpose : Core().add()/push callback point.
+                     *
+                     * @param {String} $field
+                     *
+                     * @return {String} $field
+                     */
+                    isFieldExist: function ($field) {
+                        if (self._fields.lastIndexOf($field) < 0) {
+                            let field = $field;
+                            if(field === '') field = '<empty>';
+                            if(field === null) field = '<null>';
+                            if(field === 'undefined') field = '<undefined>';
+                            let message = `The requested field '${field}' as key component does not exist`;
+                            throw message;
+                        }
+
+                        return $field;
+                    },
+
+
+                    /**
+                     * Once fields are added as key component, trigger a new
+                     * indexing process to update byKey index.
+                     *
+                     * Purpose : Core().add()/post callback point.
+                     *
+                     * @param {Array}  $keys
+                     *
+                     * @return {Array} $keys
+                     */
+                    triggerIndexing: function ($keys) {
+                        self._data.core().indexing();
+
+                        return $keys;
+                    }
                 };
 
                 let extended = {
                     data: 'keys',
-                    callbacks: {},
+                    callbacks: {
+                        add: {
+                            push: functions.isFieldExist,
+                            post: functions.triggerIndexing
+                        }
+                    },
                     returns: functions
                 };
 
