@@ -1,9 +1,6 @@
-// Temp for dev
-clog = console.log;
-
-// @TODO : Mettre à jour les @return (JSDOC)
-
 /**
+ * Version 0.1.11
+ *
  * Instantiates an enhanced Array, which works as Array with extra features
  * to manipulates rows/cells.
  *
