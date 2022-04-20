@@ -1,5 +1,9 @@
-// Temp for dev
-clog = console.log;
+// Temp for dev (compatibility with system which has no console)
+try {
+    clog = console.log;
+} catch($err) {
+    clog = function(){};
+}
 
 // @TODO : Mettre à jour les @return (JSDOC)
 
@@ -243,7 +247,7 @@ function TableJs($fields, $keys, $array) {
 				// Return the created row
 				return this[this.push($aRowData) - 1];
 			}
-		}
+		},
 
         /**
          * Return indexes table. Not purpose for handling but to take acknowledge
