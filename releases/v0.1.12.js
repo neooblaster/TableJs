@@ -222,23 +222,23 @@ function TableJs($fields, $keys, $array) {
                 return self._data;
             }
         },
-
-        /**
-         * Create a new table row with appropriates fields and methods
-         *
-         * @param [Array|String]  [Optional] Data for the new row.
-         *
-         * @return [Array]		  The TableJs Row with all generated methods.
-         */
-        new: {
-            enumerable: false,
-            writable: false,
-            value: function ($aRowData = []) {
-                // Create a new empty row, then push it in the table.
-                // Return the created row
-                return this[this.push($aRowData) - 1];
-            }
-        },
+		
+		/**
+		 * Create a new table row with appropriates fields and methods
+		 * 
+		 * @param [Array|String]  [Optional] Data for the new row.
+		 *
+		 * @return [Array]		  The TableJs Row with all generated methods.
+		 */
+		new: {
+			enumerable: false,
+			writable: false,
+			value: function ($aRowData = []) {
+				// Create a new empty row, then push it in the table.
+				// Return the created row
+				return this[this.push($aRowData) - 1];
+			}
+		},
 
         /**
          * Return indexes table. Not purpose for handling but to take acknowledge
