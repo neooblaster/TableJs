@@ -1,4 +1,3 @@
-// Temp for dev (compatibility with system which has no console)
 try {
     clog = console.log;
 } catch($err) {
@@ -34,13 +33,19 @@ function TableJs($fields, $keys, $array) {
     let self = this;
 
     /**
+     * @type {Array} Store the original object for reference purpose.
+     * @private
+     */
+    self._boundData = $array;
+
+    /**
      * @type {Array} Array which contains data. Master Array
      * @private
      */
     self._data = [];
 
     /**
-     * @type {string} Library version
+     * @type {String} Library version
      * @private
      */
     self._version = 'v0.2.0';
@@ -275,6 +280,19 @@ function TableJs($fields, $keys, $array) {
             enumerable: false,
             writable: false,
             value: function () {
+                /**
+                 * This context: {
+                 *    data: 'fields|keys|data',
+                 *    callbacks: {
+                 *        add: {
+                 *            pre: [functions.xxx]?,
+                 *            push: [functions.xxx]?,
+                 *            post: [functions.xxx]?
+                 *        }
+                 *    },
+                 *    returns: functions
+                 * }
+                 */
                 // For better usage, each variant can be called directly
                 // Call directly, return instance.
                 // Call with empty parameter will return sub-methods
@@ -282,14 +300,15 @@ function TableJs($fields, $keys, $array) {
                     return self._data.core.apply(this).set.apply(this, arguments);
                 }
 
-                // Return basic method + those for call (fields, keys or data)
+                // Return basic method plus those for call (fields, keys, data)
                 let returning = Object.assign({
                     /**
-                     * Flush & Set provided arguments values in bound variable name (this.data).
+                     * Flush & Set provided arguments' values in bound variable name (this.data).
                      *
                      * @return {TableJs}
                      */
                     set: function () {
+                        // Retrieve to flush data
                         let data = self[`_${this.data}`];
 
                         // Refresh data
@@ -307,7 +326,7 @@ function TableJs($fields, $keys, $array) {
                     add: function () {
                         let data = self[`_${this.data}`];
 
-                        // Pre processor for arguments
+                        // Preprocessor for arguments
                         if (this.callbacks && this.callbacks.add && this.callbacks.add.pre) {
                             for(let i = 0; i < this.callbacks.add.pre.length; i++) {
                                 arguments = this.callbacks.add.pre[i].apply(this, arguments);
@@ -578,12 +597,20 @@ function TableJs($fields, $keys, $array) {
                     },
 
                     /**
-                     * Set and/or Return the value of the corresponding field.
+                     * Set and/or return the value of the corresponding field.
                      *
                      * @return {*}  Value of the field
                      */
                     value: function ($field, $row, $value) {
                         let fieldIndex = self._fields.lastIndexOf($field);
+
+                        // Reflect Modification to boundItem (if defined)
+                        if($row.hasOwnProperty('boundItem')){
+                            // To prevent infinite loop, check current value
+                            if($row.boundItem[$field] !== $value){
+                                $row.boundItem[$field] = $value;
+                            }
+                        }
 
                         // If a value is set, that implies we want to set
                         // a new value
@@ -809,6 +836,123 @@ function TableJs($fields, $keys, $array) {
                     },
 
                     /**
+                     * About Array of Object, need to replace
+                     * objects in array by Proxy, and returns a new internal
+                     * array.
+                     *
+                     * Purpose: Core().add()/pre callback point.
+                     *
+                     * @returns {IArguments|*[][]}
+                     */
+                    createProxy: function(){
+                        // Create a new representation of Array of Object as Array of Array
+                        // with corresponding bound item
+                        let aNewArray = [];
+                        let aFields = [];
+
+                        // If Array of Object, we need to replace the Argument
+                        // with the internal Array of Array
+                        let bUpdateArguments = false;
+
+                        for (let i in arguments) {
+                            if(!arguments.hasOwnProperty(i)) continue;
+                            let argv = arguments[i];
+
+                            if (Object.prototype.toString.call(argv) === "[object Array]") {
+                                if (argv.length > 0) {
+                                    // Read items
+                                    for(let i = 0; i < argv.length; i++) {
+                                        // If Array of Object
+                                        if(Object.prototype.toString.call(argv[i]) === "[object Object]"){
+                                            bUpdateArguments = true;
+
+                                            // Create Proxy for source modification binding to TableJs
+                                            argv[i] = new Proxy(argv[i], {
+                                                set($oTarget, $sProperty, $mValue) {
+                                                    // Anti-loop system is handled by Core.value()
+
+                                                    // Commit Modification to itself (required)
+                                                    $oTarget[$sProperty] = $mValue;
+
+                                                    // Reflect modification to TableJs using boundItem
+                                                    // As the Proxy will handle any property
+                                                    // we need to ensure that property (method)
+                                                    // is available in the bound item corresponding
+                                                    // to the TableJs row.
+                                                    // In that case, update row cell using method
+                                                    // Else does nothing.
+                                                    if($oTarget.boundItem.hasOwnProperty($sProperty)){
+                                                        $oTarget.boundItem[$sProperty]($mValue);
+                                                    }
+
+                                                    return true;
+                                                }
+                                            });
+
+                                            // If field doesn't yet know, retrieve defined fields
+                                            // That implies fields are defined.
+                                            if(!aFields.length){
+                                                aFields = self._data.fields().get();
+                                            }
+
+                                            // Create Array Items
+                                            let aNewArrayItem = [];
+
+                                            // Fill the corresponding row with object properties
+                                            aFields.forEach(function($sField){
+                                                aNewArrayItem.push(argv[i][$sField]);
+                                            });
+
+                                            // Bind Item
+                                            Object.defineProperties(aNewArrayItem, {
+                                                boundItem: {
+                                                    enumerable: false,
+                                                    value: argv[i]
+                                                }
+                                            });
+
+                                            // Append Item
+                                            aNewArray.push(aNewArrayItem);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Need to replace argument?
+                        if(bUpdateArguments){
+                            return [aNewArray];
+                        }
+
+                        return arguments;
+                    },
+
+                    /**
+                     * Make reverse binding for the Proxy
+                     *
+                     * Purpose: Core().add()/post callback point.
+                     */
+                    bindToSource: function(){
+                        // Receiving TableJs data array
+
+                        // Reverse Binding when property boundItem is set
+                        for(let i = 0; i < arguments.length; i++){
+                            let aArrayItem = arguments[i];
+                            if(aArrayItem.hasOwnProperty('boundItem')){
+                                let oBoundItem = aArrayItem.boundItem;
+                                Object.defineProperties(oBoundItem, {
+                                    boundItem: {
+                                        enumerable: false,
+                                        value: aArrayItem
+                                    }
+                                })
+                            }
+                        }
+
+                        return arguments;
+                    },
+
+                    /**
                      * Wraps the array of string into an array to become data matrix.
                      *
                      * Purpose: Core().add()/pre callback point.
@@ -903,15 +1047,15 @@ function TableJs($fields, $keys, $array) {
                     data: 'data',
                     callbacks: {
                         add: {
-                            // pre: functions.preprocArgs,
-                            pre: [functions.preprocArgs]
+                            pre: [functions.preprocArgs, functions.createProxy],
                             // push: functions.consolidate //---> Best integrated in Array push rewrited method
+                            post: [functions.bindToSource]
                         }
                     },
                     returns: functions
                 };
 
-                return self._data.core.apply(extended, arguments);
+                return self._data.core.apply(extended, arguments);//this, arguments
             }
         }
     });
