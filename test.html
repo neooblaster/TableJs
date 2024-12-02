@@ -6,10 +6,61 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/neooblaster/TableJs@main/releases/v0.1.6.min.js"></script>
-
+<!--    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/neooblaster/TableJs@main/releases/v0.1.6.min.js"></script>-->
+    <script type="text/javascript" src="bin/TableJs.js"></script>
 </head>
 <body>
+    <script>
 
+        let aObject = [
+            {'Brand': 'Nikon', 'Camera': 'D3', 'Date': '2007', 'Format': 'Full Frame', 'Purpose': 'Professional'},
+            {'Brand': 'Nikon', 'Camera': 'D750', 'Date': '2014', 'Format': 'Full Frame', 'Purpose': 'Action'},
+            {'Brand': 'Nikon', 'Camera': 'D800', 'Date': '2011', 'Format': 'Full Frame', 'Purpose': 'Semi-Professional'},
+            {'Brand': 'Nikon', 'Camera': 'D810A', 'Date': '2015', 'Format': 'Full Frame', 'Purpose': 'Astro'},
+            {'Brand': 'Nikon', 'Camera': 'D7100', 'Date': '2013', 'Format': 'APS-C', 'Purpose': 'Expert'},
+            {'Brand': 'Nikon', 'Camera': 'D6', 'Date': '2020', 'Format': 'Full Frame', 'Purpose': 'Professional'},
+            {'Brand': 'Canon', 'Camera': '1Ds Mark III', 'Date': '2007', 'Format': 'Full Frame', 'Purpose': 'Professional'},
+            {'Brand': 'Canon', 'Camera': '5D Mark II', 'Date': '2008', 'Format': 'Full Frame', 'Purpose': 'Semi-Professional'},
+            {'Brand': 'Canon', 'Camera': '60Da', 'Date': '2012', 'Format': 'APS-C', 'Purpose': 'Astro'},
+            {'Brand': 'Canon', 'Camera': '250D', 'Date': '2019', 'Format': 'APS-C', 'Purpose': 'Compact'}
+        ];
+
+        let aArray = [
+            [ 'Nikon', 'D3', '2007', 'Full Frame', 'Professional' ],
+            [ 'Nikon', 'D750', '2014', 'Full Frame', 'Action' ],
+            [ 'Nikon', 'D800', '2011', 'Full Frame', 'Semi-Professional' ],
+            [ 'Nikon', 'D810A', '2015', 'Full Frame', 'Astro' ],
+            [ 'Nikon', 'D7100', '2013', 'APS-C', 'Expert' ],
+            [ 'Nikon', 'D6', '2020', 'Full Frame', 'Professional' ],
+            [ 'Canon', '1Ds Mark III', '2007', 'Full Frame', 'Professional' ],
+            [ 'Canon', '5D Mark II', '2008', 'Full Frame', 'Semi-Professional' ],
+            [ 'Canon', '60Da', '2012', 'APS-C', 'Astro' ],
+            [ 'Canon', '250D', '2019', 'APS-C', 'Compact' ],
+        ];
+
+        let aTableJsObj = new TableJs(
+            // List of Fields (At least one required)
+            ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
+
+            // Indicating that fields compose the key
+            // -> Optional, but at least empty Array must be passed
+            ['Camera', 'Brand'],
+
+            aObject
+        );
+
+        // --> OK, auto bound for Array of Array
+        let aTableJsArr = new TableJs(
+            // List of Fields (At least one required)
+            ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
+
+            // Indicating that fields compose the key
+            // -> Optional, but at least empty Array must be passed
+            ['Camera', 'Brand'],
+
+            aArray
+        );
+
+    </script>
 </body>
 </html>

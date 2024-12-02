@@ -13,9 +13,114 @@ cdir = function ($val) {
 //-----------------------------------------------------------------------------/
 const TableJs = require("./bin/TableJs");
 
-let cameras = new TableJs();
-cameras.fields().set('STRING', 'MORE', ['PACK_1', 'PACK_2']);
-clog(cameras.fields().get());
+
+
+//-----------------------------------------------------------------------------/
+//---[ Test two-way binding for Array of Array ]-------------------------------/
+//-----------------------------------------------------------------------------/
+/**
+ * Test setting data from Array of objects, where in TableJs, they are
+ * converted as an array, keeping the link with the original object/property.
+ */
+let aObjectCamera = [
+    {'Brand': 'Nikon', 'Camera': 'D3', 'Date': '2007', 'Format': 'Full Frame', 'Purpose': 'Professional'},
+    {'Brand': 'Nikon', 'Camera': 'D750', 'Date': '2014', 'Format': 'Full Frame', 'Purpose': 'Action'},
+    {'Brand': 'Nikon', 'Camera': 'D800', 'Date': '2011', 'Format': 'Full Frame', 'Purpose': 'Semi-Professional'},
+    {'Brand': 'Nikon', 'Camera': 'D810A', 'Date': '2015', 'Format': 'Full Frame', 'Purpose': 'Astro'},
+    {'Brand': 'Nikon', 'Camera': 'D7100', 'Date': '2013', 'Format': 'APS-C', 'Purpose': 'Expert'},
+    {'Brand': 'Nikon', 'Camera': 'D6', 'Date': '2020', 'Format': 'Full Frame', 'Purpose': 'Professional'},
+    {'Brand': 'Canon', 'Camera': '1Ds Mark III', 'Date': '2007', 'Format': 'Full Frame', 'Purpose': 'Professional'},
+    {'Brand': 'Canon', 'Camera': '5D Mark II', 'Date': '2008', 'Format': 'Full Frame', 'Purpose': 'Semi-Professional'},
+    {'Brand': 'Canon', 'Camera': '60Da', 'Date': '2012', 'Format': 'APS-C', 'Purpose': 'Astro'},
+    {'Brand': 'Canon', 'Camera': '250D', 'Date': '2019', 'Format': 'APS-C', 'Purpose': 'Compact'}
+];
+
+let cameras = new TableJs(
+    // List of Fields (At least one required)
+    ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
+
+    // Indicating that fields compose the key
+    // -> Optional, but at least empty Array must be passed
+    ['Camera', 'Brand'],
+
+    // Table Data : Array of Object
+    aObjectCamera
+);
+
+clog("Witness:");
+clog("aObjectCamera[0].Brand (Expected Nikon):", aObjectCamera[0].Brand);
+clog("cameras[0].Brand() (Expected Nikon):", cameras[0].Brand());
+clog("---------------------------------------------------------------");
+clog("Statement: cameras[0].Brand('test')");
+cameras[0].Brand('test');
+clog("aObjectCamera[0].Brand (Expected test):", aObjectCamera[0].Brand);
+clog("cameras[0].Brand() (Expected test):", cameras[0].Brand());
+clog("---------------------------------------------------------------");
+clog("Statement: aObjectCamera[0].Brand = 'demo'");
+aObjectCamera[0].Brand = 'demo'
+clog("aObjectCamera[0].Brand (Expected demo):", aObjectCamera[0].Brand);
+clog("cameras[0].Brand() (Expected demo):", cameras[0].Brand());
+
+
+
+//-----------------------------------------------------------------------------/
+//---[ Test two-way binding for Array of Array ]-------------------------------/
+//-----------------------------------------------------------------------------/
+/**
+ * Test setting data from Array of Array, with two-way binding
+ */
+// let aCamera = [
+//     [ 'Nikon', 'D3', '2007', 'Full Frame', 'Professional' ],
+//     [ 'Nikon', 'D750', '2014', 'Full Frame', 'Action' ],
+//     [ 'Nikon', 'D800', '2011', 'Full Frame', 'Semi-Professional' ],
+//     [ 'Nikon', 'D810A', '2015', 'Full Frame', 'Astro' ],
+//     [ 'Nikon', 'D7100', '2013', 'APS-C', 'Expert' ],
+//     [ 'Nikon', 'D6', '2020', 'Full Frame', 'Professional' ],
+//     [ 'Canon', '1Ds Mark III', '2007', 'Full Frame', 'Professional' ],
+//     [ 'Canon', '5D Mark II', '2008', 'Full Frame', 'Semi-Professional' ],
+//     [ 'Canon', '60Da', '2012', 'APS-C', 'Astro' ],
+//     [ 'Canon', '250D', '2019', 'APS-C', 'Compact' ],
+// ];
+//
+// let cameras = new TableJs(
+//     // List of Fields (At least one required)
+//     ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
+//
+//     // Indicating which fields compose the key
+//     // -> Optional, but at least empty Array must be passed
+//     ['Camera', 'Brand'],
+//
+//     // Table Data
+//     aCamera
+// );
+//
+// clog("Witness:");
+// clog("aCamera[0][0] (Expected Nikon):", aCamera[0][0]);
+// clog("cameras[0].Brand() (Expected Nikon):", cameras[0].Brand());
+// clog("---------------------------------------------------------------");
+// clog("Statement: cameras[0].Brand('test')");
+// cameras[0].Brand('test');
+// clog("aCamera[0][0] (Expected test):", aCamera[0][0]);
+// clog("cameras[0].Brand() (Expected test):", cameras[0].Brand());
+// clog("---------------------------------------------------------------");
+// clog("Statement: aCamera[0][0] = 'demo'");
+// aCamera[0][0] = 'demo';
+// clog("aCamera[0][0] (Expected demo):", aCamera[0][0]);
+// clog("cameras[0].Brand() (Expected demo):", cameras[0].Brand());
+
+
+
+
+//-----------------------------------------------------------------------------/
+//---[ Test .fields().set() ]--------------------------------------------------/
+//-----------------------------------------------------------------------------/
+/**
+ * Test setting fields with different arguments at the same time
+ * (string + Array of string)
+ */
+// let cameras = new TableJs();
+// cameras.fields().set('STRING', 'MORE', ['PACK_1', 'PACK_2']);
+// clog(cameras.fields().get());
 
 
 
