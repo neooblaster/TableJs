@@ -5,8 +5,6 @@ try {
     clog = function(){};
 }
 
-// @TODO : Mettre à jour les @return (JSDOC)
-
 /**
  * Instantiates an enhanced Array, which works as Array with extra features
  * to manipulates rows/cells.
@@ -19,7 +17,7 @@ try {
  *
  *
  * @param {Array} $fields  Field list of the new table.
- * @param {Array} $keys    Field from field list which will compose the unique key.
+ * @param {Array} $keys    Field from the field list which will compose the unique key.
  * @param {Array} $array   2D Table data.
  *
  * @return {Array}
@@ -27,7 +25,6 @@ try {
  * @constructor
  */
 function TableJs($fields, $keys, $array) {
-
     // -----------------------------------------------------
     //    Master Data
     // -----------------------------------------------------
@@ -42,6 +39,11 @@ function TableJs($fields, $keys, $array) {
      */
     self._data = [];
 
+    /**
+     * @type {string} Library version
+     * @private
+     */
+    self._version = 'v0.2.0';
 
     // -----------------------------------------------------
     //    Internal Data
@@ -66,15 +68,16 @@ function TableJs($fields, $keys, $array) {
     self._keys = [];
 
     /**
-     * Indexes for performances
+     * Indexes for performances.
      *
-     * @type {{
-     *      nextId:     number,     Each row must have a unique ID
-     *      deprecated: boolean,    Flag indicating indexes are deprecated
-     *      byId:       {Object},   Return row  index using row ID
-     *      byKeys:     {Object},   Return row  index using row key (composition of fields)
-     *      byFields:   {Object}    Return rows indexes for a value for a field
-     * }}
+     * @type {{nextId: number, deprecated: boolean, byId: {}, byKeys: {}, byFields: {}}}
+     *
+     *  - nextId:     number,     Each row must have a unique ID
+     *  - deprecated: boolean,    Flag indicating indexes are deprecated
+     *  - byId:       {Object},   Return row  index using row ID
+     *  - byKeys:     {Object},   Return row  index using row key (composition of fields)
+     *  - byFields:   {Object}    Return rows indexes for a value for a field
+     *
      * @private
      */
     self._indexes = {
@@ -267,8 +270,6 @@ function TableJs($fields, $keys, $array) {
          * Fields, Keys & Data have the same working process.
          * - Pooling by using Core
          * - Specialisation using callbacks
-         *
-         * @return ...
          */
         core: {
             enumerable: false,
@@ -308,7 +309,10 @@ function TableJs($fields, $keys, $array) {
 
                         // Pre processor for arguments
                         if (this.callbacks && this.callbacks.add && this.callbacks.add.pre) {
-                            arguments = this.callbacks.add.pre.apply(this, arguments);
+                            for(let i = 0; i < this.callbacks.add.pre.length; i++) {
+                                arguments = this.callbacks.add.pre[i].apply(this, arguments);
+                            }
+                            // arguments = this.callbacks.add.pre.apply(this, arguments);//For rollback
                         }
 
                         // Process arguments
@@ -320,7 +324,10 @@ function TableJs($fields, $keys, $array) {
                                 argv.forEach(function ($value) {
                                     if (data.lastIndexOf($value) < 0) {
                                         if (this.callbacks && this.callbacks.add && this.callbacks.add.push) {
-                                            $value = this.callbacks.add.push.call(this, $value);
+                                            for(let i = 0; i < this.callbacks.add.push.length; i++) {
+                                                $value = this.callbacks.add.push[i].call(this, $value);
+                                            }
+                                            // $value = this.callbacks.add.push.call(this, $value);//For rollback
                                         }
                                         data.push($value);
                                     }
@@ -330,7 +337,10 @@ function TableJs($fields, $keys, $array) {
                             if (typeof argv === 'string') {
                                 if (data.lastIndexOf(argv) < 0) {
                                     if (this.callbacks && this.callbacks.add && this.callbacks.add.push) {
-                                        argv = this.callbacks.add.push.call(this, argv);
+                                        for(let i = 0; i < this.callbacks.add.push.length; i++) {
+                                            argv = this.callbacks.add.push[i].call(this, argv);
+                                        }
+                                        // argv = this.callbacks.add.push.call(this, argv);//For rollback
                                     }
                                     data.push(argv);
                                 }
@@ -344,7 +354,10 @@ function TableJs($fields, $keys, $array) {
                                     argv.forEach(function ($value) {
                                         if (data.lastIndexOf($value) < 0) {
                                             if (this.callbacks && this.callbacks.add && this.callbacks.add.push) {
-                                                $value = this.callbacks.add.push.call(this, $value);
+                                                for(let i = 0; i < this.callbacks.add.push.length; i++) {
+                                                    $value = this.callbacks.add.push[i].call(this, $value);
+                                                }
+                                                // $value = this.callbacks.add.push.call(this, $value);
                                             }
                                             data.push($value);
                                         }
@@ -357,7 +370,10 @@ function TableJs($fields, $keys, $array) {
 
                         // Post Processing
                         if (this.callbacks && this.callbacks.add && this.callbacks.add.post) {
-                            data = this.callbacks.add.post.call(this, data);
+                            for(let i = 0; i < this.callbacks.add.post.length; i++) {
+                                data = this.callbacks.add.post[i].apply(this, data);
+                            }
+                            // data = this.callbacks.add.post.call(this, data);
                         }
 
                         // Indexing Data ---> Made by Push method
@@ -693,8 +709,8 @@ function TableJs($fields, $keys, $array) {
                     data: 'fields',
                     callbacks: {
                         add: {
-                            push: functions.createMethod,
-                            post: functions.consolidateAll
+                            push: [functions.createMethod],
+                            post: [functions.consolidateAll]
                         }
                     },
                     returns: functions
@@ -759,8 +775,8 @@ function TableJs($fields, $keys, $array) {
                     data: 'keys',
                     callbacks: {
                         add: {
-                            push: functions.isFieldExist,
-                            post: functions.triggerIndexing
+                            push: [functions.isFieldExist],
+                            post: [functions.triggerIndexing]
                         }
                     },
                     returns: functions
@@ -785,18 +801,17 @@ function TableJs($fields, $keys, $array) {
                      * - String value stands for one line
                      * - Array of string stands for one line
                      * - Array of Array stands for data matrix
-                     * All here before type can be mixted at once
+                     * All here before type can be mixed at once
                      *
-                     * @return ...
                      */
                     append: function () {
                         return self._data.core.apply(extended).add.apply(extended, arguments);
                     },
 
                     /**
-                     * Wraps array of string into an array to become data matrix.
+                     * Wraps the array of string into an array to become data matrix.
                      *
-                     * Purpose : Core().add()/pre callback point.
+                     * Purpose: Core().add()/pre callback point.
                      *
                      * @return {IArguments}
                      */
@@ -888,7 +903,8 @@ function TableJs($fields, $keys, $array) {
                     data: 'data',
                     callbacks: {
                         add: {
-                            pre: functions.preprocArgs,
+                            // pre: functions.preprocArgs,
+                            pre: [functions.preprocArgs]
                             // push: functions.consolidate //---> Best integrated in Array push rewrited method
                         }
                     },
