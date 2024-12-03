@@ -943,6 +943,7 @@ function TableJs($fields, $keys, $array) {
                                 Object.defineProperties(oBoundItem, {
                                     boundItem: {
                                         enumerable: false,
+                                        writable: true,
                                         value: aArrayItem
                                     }
                                 })
