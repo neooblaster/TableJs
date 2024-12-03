@@ -988,13 +988,23 @@ function TableJs($fields, $keys, $array) {
                             $row = [$row];
                         }
 
+                        let aFieldList = self._fields;
                         let fieldsNumber = self._fields.length;
                         let rowNumber = $row.length;
                         let missingCell = fieldsNumber - rowNumber;
 
                         if (missingCell > 0) {
                             for (let i = 0; i < missingCell; i++) {
-                                $row.push('');
+                                // If the row has boundItem
+                                // check boundItem object property
+                                // and use as initial value.
+                                let sMissingFieldName = aFieldList[rowNumber + i];
+
+                                if($row.hasOwnProperty('boundItem') && $row.boundItem.hasOwnProperty(sMissingFieldName)) {
+                                    $row.push($row.boundItem[sMissingFieldName]);
+                                } else {
+                                    $row.push('');
+                                }
                             }
                         }
 
@@ -1048,7 +1058,6 @@ function TableJs($fields, $keys, $array) {
                     callbacks: {
                         add: {
                             pre: [functions.preprocArgs, functions.createProxy],
-                            // push: functions.consolidate //---> Best integrated in Array push rewrited method
                             post: [functions.bindToSource]
                         }
                     },

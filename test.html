@@ -40,7 +40,8 @@
 
         let aTableJsObj = new TableJs(
             // List of Fields (At least one required)
-            ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
+            // ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
+            ['Brand', 'Camera', 'Date', 'Format'],
 
             // Indicating that fields compose the key
             // -> Optional, but at least empty Array must be passed
@@ -50,16 +51,21 @@
         );
 
         // --> OK, auto bound for Array of Array
-        let aTableJsArr = new TableJs(
-            // List of Fields (At least one required)
-            ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
+        // let aTableJsArr = new TableJs(
+        //     // List of Fields (At least one required)
+        //     ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
+        //
+        //     // Indicating that fields compose the key
+        //     // -> Optional, but at least empty Array must be passed
+        //     ['Camera', 'Brand'],
+        //
+        //     aArray
+        // );
 
-            // Indicating that fields compose the key
-            // -> Optional, but at least empty Array must be passed
-            ['Camera', 'Brand'],
+        function run(){
+            aTableJsObj.fields().add('Purpose');
+        }
 
-            aArray
-        );
 
     </script>
 </body>
