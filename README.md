@@ -1,21 +1,21 @@
 # TableJs
 
-[![Package quality](https://packagequality.com/shield/yourpackage.svg)](https://packagequality.com/#?package=@neooblaster/tablejs)
-
-> An enhanced Array with extra features to works as 2D Table
+> An enhanced Array with extra features to work as 2D Table.
 
 > The library is currently in DEV and README.md as well.
-> You can use it for development & tests (for feedback).
-> Main features are available. v1.0.0 will be released when
+> You can use it for development and tests (for feedback).
+> Main features are available.
+> Version v1.0.0 will be released when
 > coverage test will be done.
 
-``TableJs`` is a little library to create a **2D Array** (Rows with Cells) to
-simplify data selection. The strength of this library is the instantiated
+``TableJs`` is a little library to create a **2D Array** (Rows with Cells)
+from an ``Array of Array`` or `Array of Object`
+to simplify data selection. The strength of this library is the instantiated
 ``TableJs`` is a standard `Array` with enhanced features.
 That means all your knowledge regarding ``Array`` can be applied for
-this object. You have just keep in mind your are working with a 2D Array
+this object. You have to keep in mind you are working with a 2D Array.
 
-It can also used in for Web Site using the following CDN :
+It can be also used in for Website using the following CDN :
 
 ````html
 <!-- Do not use "Latest" in production -->
@@ -23,7 +23,7 @@ It can also used in for Web Site using the following CDN :
 ````
 
 ````html
-<!-- Use specified version in production -->
+<!-- Use a specified version in production -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/neooblaster/TableJs@main/releases/v0.1.x.min.js"></script>
 ````
 
@@ -75,20 +75,20 @@ You can confer to file ``demo.js`` to retrieve back / execute the
 
 ### Initializing a new ``TableJs``
 
-Please considering the following table data :
+Please consider the following table data :
 
-| Brand | Camera       | Date | Format      | Purpose          |
-|:-----:|:------------:|:----:|:-----------:|:----------------:|
-| Nikon | D3           | 2007 | Full Frame | Professional      |
-| Nikon | D750         | 2014 | Full Frame | Action            |
-| Nikon | D800         | 2011 | Full Frame | Semi-Professional |
-| Nikon | D810A        | 2015 | Full Frame | Astro             |
-| Nikon | D7100        | 2013 | APS-C      | Expert            |
-| Nikon | D6           | 2020 | Full Frame | Professional      |
-| Canon | 1Ds Mark III | 2007 | Full Frame | Professional      |
-| Canon | 5D Mark II   | 2008 | Full Frame | Semi-Professional |
-| Canon | 60Da         | 2012 | APS-C      | Astro             |
-| Canon | 250D         | 2019 | APS-C      | Compact           |
+| Brand |    Camera    | Date |   Format   |      Purpose      |
+|:-----:|:------------:|:----:|:----------:|:-----------------:|
+| Nikon |      D3      | 2007 | Full Frame |   Professional    |
+| Nikon |     D750     | 2014 | Full Frame |      Action       |
+| Nikon |     D800     | 2011 | Full Frame | Semi-Professional |
+| Nikon |    D810A     | 2015 | Full Frame |       Astro       |
+| Nikon |    D7100     | 2013 |   APS-C    |      Expert       |
+| Nikon |      D6      | 2020 | Full Frame |   Professional    |
+| Canon | 1Ds Mark III | 2007 | Full Frame |   Professional    |
+| Canon |  5D Mark II  | 2008 | Full Frame | Semi-Professional |
+| Canon |     60Da     | 2012 |   APS-C    |       Astro       |
+| Canon |     250D     | 2019 |   APS-C    |      Compact      |
 
 To create a new ``TableJs`` you can instantiate it step by step<sup style="color: red">_*_</sup> 
 when the content is full dynamic or in one shot like this :
@@ -101,7 +101,7 @@ let cameras = new TableJs(
     ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
     
     // Indicating which fields compose the key
-    // -> Optional, but at least empty Array must be passed
+    // → Optional, but at least empty Array must be passed
     ['Camera', 'Brand'],
 
     // Table Data
@@ -120,7 +120,7 @@ let cameras = new TableJs(
 );
 ````
 
-Result is the following Array :
+The Result is the following Array :
 
 ````js
 console.log(cameras);
@@ -149,8 +149,8 @@ the name must respect **JavaScript** function naming convention.
 ### Get distinct values
 
 From this enhanced ``Array``,
-you can easily get distinct values
-by calling method where the name is one of field set previously
+you can get distinct values
+by calling method where the name is one of fields set previously
 without parameters :
 
 ````js
@@ -559,9 +559,94 @@ Cameras Table:  [
 ````
 
 
-For more feature, please confer to **detailed documentation**.
+For more features, please confer to **detailed documentation**.
 
 <hr />
+
+
+
+### Using objects as the source of data for TableJs
+
+``TableJs`` is able to handle objects as the source of the data.
+
+Indeed, depending on your needs,
+you can prefer working with objects that are easier to manipulate
+and use in your application.
+
+In that case, ``TableJs`` offer all features to
+filter, get and set while keeping the object as is.
+Both are bound together and all modifications are
+reflected to the other.
+
+There are only three requirements to work with objects: 
+
+- Field names must be defined before setting data or at the
+same time during global initialization.
+- Objects are wrapped in an array : ``Array of Object``
+- Objects in the array must have the same definition of properties
+
+Please find below an example with cameras, 
+but data structured in a ``Array of Object`` : 
+
+````js
+let aObjectCamera = [
+    {'Brand': 'Nikon', 'Camera': 'D3', 'Date': '2007', 'Format': 'Full Frame', 'Purpose': 'Professional'},
+    {'Brand': 'Nikon', 'Camera': 'D750', 'Date': '2014', 'Format': 'Full Frame', 'Purpose': 'Action'},
+    {'Brand': 'Nikon', 'Camera': 'D800', 'Date': '2011', 'Format': 'Full Frame', 'Purpose': 'Semi-Professional'},
+    {'Brand': 'Nikon', 'Camera': 'D810A', 'Date': '2015', 'Format': 'Full Frame', 'Purpose': 'Astro'},
+    {'Brand': 'Nikon', 'Camera': 'D7100', 'Date': '2013', 'Format': 'APS-C', 'Purpose': 'Expert'},
+    {'Brand': 'Nikon', 'Camera': 'D6', 'Date': '2020', 'Format': 'Full Frame', 'Purpose': 'Professional'},
+    {'Brand': 'Canon', 'Camera': '1Ds Mark III', 'Date': '2007', 'Format': 'Full Frame', 'Purpose': 'Professional'},
+    {'Brand': 'Canon', 'Camera': '5D Mark II', 'Date': '2008', 'Format': 'Full Frame', 'Purpose': 'Semi-Professional'},
+    {'Brand': 'Canon', 'Camera': '60Da', 'Date': '2012', 'Format': 'APS-C', 'Purpose': 'Astro'},
+    {'Brand': 'Canon', 'Camera': '250D', 'Date': '2019', 'Format': 'APS-C', 'Purpose': 'Compact'}
+];
+
+let cameras = new TableJs(
+    // List of Fields (At least one required)
+    ['Brand', 'Camera', 'Date', 'Format', 'Purpose'],
+
+    // Indicating that fields compose the key
+    // -> Optional, but at least empty Array must be passed
+    ['Camera', 'Brand'],
+
+    // Table Data : Array of Object
+    aObjectCamera
+);
+
+clog("Witness:");
+clog("aObjectCamera[0].Brand (Expected Nikon):", aObjectCamera[0].Brand);
+clog("cameras[0].Brand() (Expected Nikon):", cameras[0].Brand());
+clog("---------------------------------------------------------------");
+clog("Statement: cameras[0].Brand('test')");
+// Modification from TableJs using methods
+cameras[0].Brand('test');
+clog("aObjectCamera[0].Brand (Expected test):", aObjectCamera[0].Brand);
+clog("cameras[0].Brand() (Expected test):", cameras[0].Brand());
+clog("---------------------------------------------------------------");
+clog("Statement: aObjectCamera[0].Brand = 'demo'");
+// Modification from original array providing data, modifying the property
+aObjectCamera[0].Brand = 'demo';
+clog("aObjectCamera[0].Brand (Expected demo):", aObjectCamera[0].Brand);
+clog("cameras[0].Brand() (Expected demo):", cameras[0].Brand());
+````
+
+Below the result of output : 
+
+````plaintext
+Witness:
+aObjectCamera[0].Brand (Expected Nikon): Nikon
+cameras[0].Brand() (Expected Nikon): Nikon
+---------------------------------------------------------------
+Statement: cameras[0].Brand('test')
+aObjectCamera[0].Brand (Expected test): test
+cameras[0].Brand() (Expected test): test
+---------------------------------------------------------------
+Statement: aObjectCamera[0].Brand = 'demo'
+aObjectCamera[0].Brand (Expected demo): demo
+cameras[0].Brand() (Expected demo): demo
+
+````
 
 
 
